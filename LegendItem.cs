@@ -45,6 +45,7 @@ namespace SharpMap.Rendering.Decoration.Legend
             foreach (var subItem in SubItems)
             {
                 var subItemSize = subItem.InternalSize(g, map);
+                subItemSize.Width += Indentation;
                 if (subItem is MapDecoration)
                 {
                     var tmp = (MapDecoration) subItem;

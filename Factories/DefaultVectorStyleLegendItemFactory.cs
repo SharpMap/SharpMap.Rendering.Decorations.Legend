@@ -82,6 +82,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 				return lis[0];
 	
 			var res = new LegendItem();
+			res.Indentation = legend.Factory.SymbolSize.Width;
 				foreach (var li in lis) {
 					res.SubItems.Add(li);
 				}
