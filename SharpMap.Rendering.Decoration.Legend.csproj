@@ -89,6 +89,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Factories\DefaultLayerGroupLegendItemFactory.cs" />
+    <Compile Include="Factories\DefaultThemeLegendItemFactory.cs" />
+    <Compile Include="Factories\DefaultVectorLayerLegendItemFactory.cs" />
+    <Compile Include="Factories\DefaultVectorStyleLegendItemFactory.cs" />
     <Compile Include="Factories\ILegendFactory.cs" />
     <Compile Include="Factories\LegendFactory.cs" />
     <Compile Include="ILegend.cs" />

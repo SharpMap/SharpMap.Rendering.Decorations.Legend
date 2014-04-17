@@ -20,7 +20,7 @@ using System;
 namespace SharpMap.Rendering.Decoration.Legend.Factories
 {
     /// <summary>
-    /// A factory to create a legend item
+    /// Interface for a factory to create a legend item
     /// </summary>
     public interface ILegendItemFactory
     {

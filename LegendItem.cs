@@ -25,7 +25,7 @@ namespace SharpMap.Rendering.Decoration.Legend
     /// <summary>
     /// Implementation of a legend item
     /// </summary>
-    internal class LegendItem : MapDecoration, ILegendItem
+    internal class LegendItem : /*MapDecoration,*/ ILegendItem
     {
         /// <summary>
         /// Creates an instance of this class
@@ -33,21 +33,13 @@ namespace SharpMap.Rendering.Decoration.Legend
         public LegendItem()
         {
             SubItems = new Collection<ILegendItem>();
+            //Anchor = SharpMap.Rendering.Decoration.MapDecorationAnchor.LeftTop;
+            //Location = Point.Empty;
         }
-
-        /// <summary>
-        /// Function to compute the required size for rendering the map decoration object
-        /// <para>
-        /// This is just the size of the decoration object, border settings are excluded
-        /// </para>
-        /// </summary>
-        /// <param name="g">The graphics object</param><param name="map">The map</param>
-        /// <returns>
-        /// The size of the map decoration
-        /// </returns>
-        protected override Size InternalSize(Graphics g, Map map)
+        
+        Size ILegendItem.InternalSize(Graphics g, Map map)
         {
-            if (Exclude) return Size.Empty;
+        	if (Exclude) return Size.Empty;
 
             var size = ComputeItemSize(g, map);
             foreach (var subItem in SubItems)
@@ -60,14 +52,11 @@ namespace SharpMap.Rendering.Decoration.Legend
                 }
                 size = ComputeMergedSize(size, subItemSize);
             }
-            return Size.Add(size, Size.Add(BorderMargin, BorderMargin));
+            return size;
         }
 
-        Size ILegendItem.InternalSize(Graphics g, Map map)
-        {
-            return InternalSize(g, map);
-        }
-
+        public Size Padding { get; set; }
+        
         /// <summary>
         /// Method to compute the merged size
         /// </summary>
@@ -129,6 +118,9 @@ namespace SharpMap.Rendering.Decoration.Legend
         /// </summary>
         public Font LabelFont { get; set; }
 
+        /// <summary>
+        /// Gets or sets the brush to write the <see cref="ILegendItem.Label"/>
+        /// </summary>
         public Brush LabelBrush { get; set; }
 
         /// <summary>
@@ -150,7 +142,7 @@ namespace SharpMap.Rendering.Decoration.Legend
         /// Function to render the actual map decoration
         /// </summary>
         /// <param name="g"/><param name="map"/>
-        protected override void OnRender(Graphics g, Map map)
+        void IMapDecoration.Render(Graphics g, Map map)
         {
             // nothing to do if excluded
             if (Exclude) return;
@@ -159,15 +151,17 @@ namespace SharpMap.Rendering.Decoration.Legend
             var offset = Point.Empty;
             if (Symbol != null)
             {
-                g.DrawImage(Symbol, 0f, 0.5f* (itemSize.Height - Symbol.Size.Height));
+            	g.DrawImage(Symbol, 
+            	            new Rectangle(0, (int)(0.5f* (itemSize.Height - Symbol.Size.Height)), Symbol.Size.Width, Symbol.Size.Height),
+            	            new Rectangle(0, 0, Symbol.Size.Width,Symbol.Size.Height), GraphicsUnit.Pixel);
                 offset.X += Symbol.Size.Width + Padding.Width;
             }
 
             if (!string.IsNullOrEmpty(Label))
             {
                 var rect = new RectangleF(offset.X, 0, itemSize.Width - offset.X, itemSize.Height);
-                g.DrawString(Label, LabelFont, LabelBrush, rect, new StringFormat(StringFormat.GenericDefault)
-                { Alignment = StringAlignment.Near , LineAlignment = StringAlignment.Center });
+                g.DrawString(Label, LabelFont, LabelBrush, rect, new StringFormat()
+                { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center });
             }
 
             if (Expanded)
@@ -178,13 +172,15 @@ namespace SharpMap.Rendering.Decoration.Legend
                 {
                     legendItem.Render(g, map);
                 }
-                g.TranslateTransform(-Indentation, 0);
+                g.TranslateTransform(-Indentation, Padding.Height);
             }
             else
             {
-                g.TranslateTransform(0, itemSize.Height);
+                g.TranslateTransform(0, itemSize.Height + Padding.Height);
             }
 
         }
+        
+        
     }
 }

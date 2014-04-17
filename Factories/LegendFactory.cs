@@ -38,6 +38,8 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 
         public int Indentation { get; set; }
 
+        public Size Padding { get; set; }
+        
         public Size SymbolSize { get; set; }
 
         public LegendFactory()
@@ -45,7 +47,14 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             ForeColor = Brushes.DarkSlateBlue;
             HeaderFont = new Font("Arial", 14, FontStyle.Bold, GraphicsUnit.Pixel);
             ItemFont = new Font("Arial", 11, FontStyle.Regular, GraphicsUnit.Pixel);
-            SymbolSize = new Size(32, 20);
+            SymbolSize = new Size(24, 24);
+            Indentation = SymbolSize.Width;
+            Padding = new Size(3, 3);
+            
+            Register(new DefaultLayerGroupLegendItemFactory());
+            Register(new DefaultVectorLayerLegendItemFactory());
+            Register(new DefaultVectorStyleLegendItemFactory());
+            Register(new DefaultThemeLegendItemFactory());
         }
 
         public virtual ILegend Create(Map map)
@@ -67,6 +76,12 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
                 res.Root.SubItems.Add(Create(res, "Background", map.BackgroundLayer));
             }
 
+            res.BorderColor = Color.Tomato;
+            res.BorderMargin = new Size(5, 5);
+            res.BorderWidth = 2;
+            res.RoundedEdges = true;
+            res.BackgroundColor = Color.LightBlue;
+            
             return res;
         }
 
@@ -97,11 +112,13 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
                 LabelFont = HeaderFont,
                 LabelBrush = ForeColor,
                 Expanded = true,
+                Padding = Padding,
             };
 
             foreach (var layer in layerCollection)
             {
-                res.SubItems.Add(Create(legend, layer));
+                var item = Create(legend, layer);
+            	res.SubItems.Add(item);
             }
             return res;
         }
@@ -117,6 +134,8 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
                 Label = layer.LayerName, LabelFont = ItemFont, LabelBrush = ForeColor,
                 Symbol = CreateGenericSymbol(layer),
                 Exclude = !layer.Enabled,
+                Indentation = Indentation,
+                Padding = Padding,
                 Expanded = true
             };
         }
@@ -126,14 +145,22 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             if (SymbolSize == Size.Empty)
                 return null;
 
-            Image res;
-            using (var m = new Map(SymbolSize))
+            Image tmp;
+            using (var m = new Map(new Size(10*SymbolSize.Width, 10*SymbolSize.Height)))
             {
                 m.Layers.Add(layer);
                 m.ZoomToExtents();
-                res = m.GetMap();
+                tmp = m.GetMap();
                 m.Layers.Remove(layer);
             }
+            
+           var res = new Bitmap(SymbolSize.Width, SymbolSize.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+           using (var g = Graphics.FromImage(res))
+           {
+           		g.DrawImage(tmp, new Rectangle(0, 0, SymbolSize.Width, SymbolSize.Height),
+           	                 	 new Rectangle(0, 0, tmp.Width, tmp.Height), GraphicsUnit.Pixel);
+           }
+                   
             return res;
         }
 
@@ -153,7 +180,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
                 foreach (var i in t.GetInterfaces())
                 {
                     if (LegendItemFactories.TryGetValue(i, out res))
-                        break;
+                        return res;
                 }
 
                 if (t == typeof (object))

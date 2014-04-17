@@ -27,14 +27,14 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         /// <summary>
         /// Method to create a legend <see cref="IMapDecoration"/> for the provided map
         /// </summary>
-        /// <param name="map"></param>
-        /// <returns></returns>
+        /// <param name="map">The map</param>
+        /// <returns>A legend map decoration</returns>
         ILegend Create(Map map);
 
         /// <summary>
         /// Method to register a legend item factory
         /// </summary>
-        /// <param name="itemFactory"></param>
+        /// <param name="itemFactory">The item factory to register</param>
         void Register(ILegendItemFactory itemFactory);
 
         /// <summary>
@@ -58,6 +58,16 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         /// Gets or sets the brush to write header or label with
         /// </summary>
         Brush ForeColor  { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the default padding between items
+        /// </summary>
+        Size Padding { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default padding between items
+        /// </summary>
+        Size SymbolSize { get; set; }
 
     }
 }

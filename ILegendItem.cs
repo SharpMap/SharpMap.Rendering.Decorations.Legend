@@ -59,9 +59,14 @@ namespace SharpMap.Rendering.Decoration.Legend
         Size InternalSize(Graphics g, Map map);
 
         /// <summary>
+        /// Gets or sets the padding size
+        /// </summary>
+        Size Padding { get; set; }
+        
+        /// <summary>
         /// Gets or sets a value indicating the indentation for sub items
         /// </summary>
-        int Indentation { get; }
+        int Indentation { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating that <see cref="SubItems"/> should be expanded
