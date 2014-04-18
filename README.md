@@ -23,3 +23,7 @@ var legendImage = map.GetLegendImage();
 map.Decorations.Add(legend);
     
 ```
+
+Here is an example:
+
+![Example image](/examplelegend.png "Example legend image")
