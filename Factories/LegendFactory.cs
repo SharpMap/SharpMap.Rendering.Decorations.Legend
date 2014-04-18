@@ -115,8 +115,10 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
                 Padding = Padding,
             };
 
-            foreach (var layer in layerCollection)
+            for (var i = layerCollection.Count-1; i >= 0; i--)
             {
+            	var layer = layerCollection[i];
+            
                 var item = Create(legend, layer);
             	res.SubItems.Add(item);
             }

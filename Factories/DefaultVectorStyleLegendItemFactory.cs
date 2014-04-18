@@ -112,12 +112,13 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 				g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 				if (vs.Symbol != null)
 				{
-					g.DrawImage(vs.Symbol, new Rectangle(0, 0, symbolSize.Width, symbolSize.Height),
+					g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+					g.DrawImage(vs.Symbol, new Rectangle(2, 2, symbolSize.Width-4, symbolSize.Height-4),
 							               new Rectangle(0, 0, vs.Symbol.Width, vs.Symbol.Height), GraphicsUnit.Pixel);
 				}
 				else if (vs.PointColor != null && vs.PointColor != Brushes.Transparent)
 				{
-					g.FillEllipse(vs.PointColor, new RectangleF(0, 0, symbolSize.Width, symbolSize.Height));
+					g.FillEllipse(vs.PointColor, new RectangleF(2, 2, symbolSize.Width-4, symbolSize.Height-4));
 				}
 				else
 				{

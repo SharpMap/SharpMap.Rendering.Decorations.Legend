@@ -107,6 +107,12 @@
   <ItemGroup>
     <Content Include="Factories\Default.png" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="CategoryTheme\SharpMap.Rendering.Thematics.CategoryTheme.csproj">
+      <Project>{565E0DA8-F456-486E-96B6-19C1C273295D}</Project>
+      <Name>SharpMap.Rendering.Thematics.CategoryTheme</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

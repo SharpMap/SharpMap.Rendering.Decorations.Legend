@@ -99,6 +99,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CategoryTheme\SharpMap.Rendering.Thematics.CategoryTheme.csproj">
+      <Project>{565E0DA8-F456-486E-96B6-19C1C273295D}</Project>
+      <Name>SharpMap.Rendering.Thematics.CategoryTheme</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SharpMap.Rendering.Decoration.Legend.csproj">
       <Project>{b097d44f-930d-4892-9c78-64c376968b69}</Project>
       <Name>SharpMap.Rendering.Decoration.Legend</Name>

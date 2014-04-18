@@ -35,6 +35,11 @@ namespace SharpMap.Rendering.Decoration.Legend
         /// </summary>
         ILegendFactory Factory { get; }
 
-        Image GetLegendImage(int dpi);
+        /// <summary>
+        /// Method to get an image of the legend
+        /// </summary>
+        /// <param name="dpi">The dots-per-inch value</param>
+        /// <returns>An image</returns>
+        Image GetLegendImage(int dpi = 96);
     }
 }

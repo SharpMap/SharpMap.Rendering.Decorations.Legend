@@ -66,7 +66,7 @@ namespace SharpMap.Rendering.Decoration.Legend
         /// <param name="dpi">The dpi setting</param>
         /// <returns>An image of the decoration</returns>
         // TODO: MOVE TO MAPDECORATION, OR AS EXTENSIONMETHOD FOR IMAPDECORATION?
-        public Image GetLegendImage(int dpi)
+        public Image GetLegendImage(int dpi = 96)
         {
             var anchor = Anchor;
             Anchor = MapDecorationAnchor.LeftTop;

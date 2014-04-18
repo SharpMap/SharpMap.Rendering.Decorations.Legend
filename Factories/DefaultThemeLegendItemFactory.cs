@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with SharpMap; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 using System;
 using System.Collections.Generic;
@@ -51,7 +51,19 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 			{
 				return CreateUniqueValuesLegendItems<int>(legend, (UniqueValuesTheme<int>)item);
 			}
-			return null;	
+			else if (item is CategoryTheme<string>)
+			{
+				return CreateCategoryThemeLegendItem<string>(legend, (CategoryTheme<string>)item);
+			}
+			else if (item is CategoryTheme<double>)
+			{
+				return CreateCategoryThemeLegendItem<double>(legend, (CategoryTheme<double>)item);
+			}
+			else if (item is CategoryTheme<int>)
+			{
+				return CreateCategoryThemeLegendItem<int>(legend, (CategoryTheme<int>)item);
+			}
+			return null;
 		}
 		
 		private static SharpMap.Data.FeatureDataTable CreateTable(string columnName, Type type)
@@ -64,12 +76,15 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 		ILegendItem CreateUniqueValuesLegendItems<T>(ILegend legend, UniqueValuesTheme<T> uvt)
 			where T: IConvertible
 		{
-			var res = new LegendItem{ Label = " ("+ uvt.AttributeName+")", 
+			var res = new LegendItem{ Label = " ("+ uvt.AttributeName+")",
 				LabelFont = legend.Factory.ItemFont, LabelBrush = legend.Factory.ForeColor,
-								Indentation = legend.Factory.SymbolSize.Width
-};
+				Indentation = legend.Factory.SymbolSize.Width
+			};
 			
 			var defaultItem = legend.Factory[uvt.DefaultStyle].Create(legend, uvt.DefaultStyle);
+			defaultItem.Label = "(default)";
+			defaultItem.LabelBrush = legend.Factory.ForeColor;
+			defaultItem.LabelFont = legend.Factory.ItemFont;
 			res.SubItems.Add(defaultItem);
 			using(var fdt = CreateTable(uvt.AttributeName, typeof(T)))
 			{
@@ -93,8 +108,8 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 		ILegendItem CreateGradientThemeLegendItems(ILegend legend, GradientTheme gt)
 		{
 			var res = new LegendItem{ Label = " ("+gt.ColumnName+")" ,
-								Indentation = legend.Factory.SymbolSize.Width
-							};
+				Indentation = legend.Factory.SymbolSize.Width
+			};
 			var fcb = gt.FillColorBlend;
 			var lcb = gt.LineColorBlend;
 			var tcb = gt.TextColorBlend;
@@ -106,7 +121,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 					LabelFont = legend.Factory.ItemFont,
 					LabelBrush = tcb != null ? new SolidBrush(tcb.Colors[i]) : legend.Factory.ForeColor,
 					Symbol = CreateSymbol(legend.Factory.SymbolSize, fcb.Colors[i], lcb != null ? lcb.Colors[i] : Color.Transparent),
-						
+					
 				};
 				res.SubItems.Add(sl);
 			}
@@ -129,6 +144,31 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 			return res;
 		}
 		
-		
+		private static ILegendItem CreateCategoryThemeLegendItem<T>(ILegend legend, CategoryTheme<T> ct)
+			where T: IComparable<T>
+		{
+			var res = new LegendItem{ Label = " ("+ ct.ColumnName +")",
+				LabelFont = legend.Factory.ItemFont, LabelBrush = legend.Factory.ForeColor,
+				Indentation = legend.Factory.SymbolSize.Width
+			};
+			
+			var defaultItem = legend.Factory[ct.Default.Style].Create(legend, ct.Default.Style);
+			defaultItem.Label = "(" +  ct.Default.Title + ")";
+			defaultItem.LabelBrush = legend.Factory.ForeColor;
+			defaultItem.LabelFont = legend.Factory.ItemFont;
+			
+			res.SubItems.Add(defaultItem);
+			foreach (var element in ct.ItemsAsReadOnly())
+			{
+				var style = element.Style;
+				var item = legend.Factory[style].Create(legend, style);
+				item.Label = element.Title;
+				item.LabelFont = legend.Factory.ItemFont;
+				item.LabelBrush = legend.Factory.ForeColor;
+				res.SubItems.Add(item);
+			}
+			
+			return res;
+		}
 	}
 }

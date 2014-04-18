@@ -168,7 +168,7 @@ namespace SharpMap.Rendering.Decoration.Legend
             if (Expanded)
             {
                 // Render sub - items
-                g.TranslateTransform(Indentation, itemSize.Height);
+                g.TranslateTransform(Indentation, itemSize.Height + Padding.Height);
                 foreach (var legendItem in SubItems)
                 {
                     legendItem.Render(g, map);
