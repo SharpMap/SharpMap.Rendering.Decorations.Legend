@@ -30,24 +30,45 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         private static readonly Dictionary<Type, ILegendItemFactory> LegendItemFactories =
             new Dictionary<Type, ILegendItemFactory>();
         
+        /// <summary>
+        /// The forecolor of the header fonts
+        /// </summary>
         public Brush ForeColor { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating the default header font
+        /// </summary>
         public Font HeaderFont { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating the default item font
+        /// </summary>
         public Font ItemFont { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating the default indentation value
+        /// </summary>
         public int Indentation { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating the default padding between items
+        /// </summary>
         public Size Padding { get; set; }
         
+        /// <summary>
+        /// Gets or sets a value indicating the default symbol size
+        /// </summary>
         public Size SymbolSize { get; set; }
 
+        /// <summary>
+        /// Creates an instance of this class
+        /// </summary>
         public LegendFactory()
         {
             ForeColor = Brushes.DarkSlateBlue;
             HeaderFont = new Font("Arial", 14, FontStyle.Bold, GraphicsUnit.Pixel);
             ItemFont = new Font("Arial", 11, FontStyle.Regular, GraphicsUnit.Pixel);
-            SymbolSize = new Size(24, 24);
+            SymbolSize = new Size(16, 16);
             Indentation = SymbolSize.Width;
             Padding = new Size(3, 3);
             
@@ -55,11 +76,18 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             Register(new DefaultVectorLayerLegendItemFactory());
             Register(new DefaultVectorStyleLegendItemFactory());
             Register(new DefaultThemeLegendItemFactory());
+            Register(new DefaultSymbolizerLegendItemFactory());
+            Register(new DefaultSymbolizerLayerLegendItemFactory());
         }
 
+        /// <summary>
+        /// Method to create a legend <see cref="IMapDecoration"/> for the provided map
+        /// </summary>
+        /// <param name="map">The map</param>
+        /// <returns>A legend map decoration</returns>
         public virtual ILegend Create(Map map)
         {
-            var res = new Legend(map) {Root = {Label = "Map", LabelFont = HeaderFont, LabelBrush = ForeColor}};
+            var res = new Legend(map, this) {Root = {Label = "Map", LabelFont = HeaderFont, LabelBrush = ForeColor}};
 
             if (map.VariableLayers.Count > 0)
             {
@@ -85,6 +113,11 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             return res;
         }
 
+        /// <summary>
+        /// Indexer for legend item factories
+        /// </summary>
+        /// <param name="item">The item to get a factory for</param>
+        /// <returns>A factory to create a legend item</returns>
         ILegendItemFactory ILegendFactory.this[object item]
         {
             get
@@ -100,9 +133,19 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         /// <param name="itemFactory"></param>
         public void Register(ILegendItemFactory itemFactory)
         {
-            LegendItemFactories[itemFactory.ForType] = itemFactory;
+            foreach (var forType in itemFactory.ForType    )
+            {
+                LegendItemFactories[forType] = itemFactory;
+            }
         }
 
+        /// <summary>
+        /// Method to create a legend item for a layer collection
+        /// </summary>
+        /// <param name="legend">The legend</param>
+        /// <param name="title">The title</param>
+        /// <param name="layerCollection">The layer collection</param>
+        /// <returns>The created legend item</returns>
         protected virtual ILegendItem Create(ILegend legend, string title, LayerCollection layerCollection)
         {
             var res = new LegendItem
@@ -125,6 +168,12 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             return res;
         }
 
+        /// <summary>
+        /// Method to create a legend item for a layer
+        /// </summary>
+        /// <param name="legend">The legend </param>
+        /// <param name="layer">The layer to create an item for</param>
+        /// <returns>A legend item</returns>
         protected virtual ILegendItem Create(ILegend legend, ILayer layer)
         {
             var factory = LookUpFactory(layer.GetType());
@@ -142,6 +191,11 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             };
         }
 
+        /// <summary>
+        /// Method to create a generic symbol for the layer
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
         private Image CreateGenericSymbol(ILayer layer)
         {
             if (SymbolSize == Size.Empty)
@@ -153,6 +207,8 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
                 m.Layers.Add(layer);
                 m.ZoomToExtents();
                 tmp = m.GetMap();
+                //tmp.Save("map.png");
+                //System.Diagnostics.Process.Start("map.png");
                 m.Layers.Remove(layer);
             }
             

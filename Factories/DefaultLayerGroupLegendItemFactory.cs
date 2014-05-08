@@ -25,7 +25,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 {
     internal class DefaultLayerGroupLegendItemFactory : ILegendItemFactory
     {
-        public Type ForType { get { return typeof (LayerGroup); }}
+        public Type[] ForType { get { return new [] {typeof (LayerGroup)}; }}
 
         public ILegendItem Create(ILegend legend, object item)
         {

@@ -12,10 +12,10 @@ namespace SharpMap.Rendering.Decoration.Legend
         private readonly Map _map;
         private readonly ILegendFactory _factory;
 
-        public Legend(Map map)
+        public Legend(Map map, ILegendFactory factory = null)
         {
             _map = map;
-            _factory = new LegendFactory();
+            _factory = factory ?? new LegendFactory();
             Root = new LegendItem { Expanded = true };
         }
         
@@ -53,6 +53,7 @@ namespace SharpMap.Rendering.Decoration.Legend
             base.OnRender(g, map);
             g.TranslateTransform(BorderMargin.Width, BorderMargin.Height);
             Root.Render(g, map);
+            g.TranslateTransform(-BorderMargin.Width, - BorderMargin.Height);
         }
 
 		protected override void OnRendered(Graphics g, Map map)

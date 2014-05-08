@@ -27,7 +27,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         /// <summary>
         /// The type this factory is intended for
         /// </summary>
-        Type ForType { get; }
+        Type[] ForType { get; }
 
         /// <summary>
         /// Method to create the legend item

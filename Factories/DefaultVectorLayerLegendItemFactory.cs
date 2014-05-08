@@ -18,7 +18,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using GeoAPI.Geometries;
 using SharpMap.Layers;
+using SharpMap.Layers.Symbolizer;
+using SharpMap.Rendering.Symbolizer;
 using SharpMap.Styles;
 using SharpMap.Rendering.Thematics;
 
@@ -29,15 +32,11 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 	/// </summary>
 	public class DefaultVectorLayerLegendItemFactory : ILegendItemFactory
 	{
-		public DefaultVectorLayerLegendItemFactory()
-		{
-		}
-		
-		public Type ForType 
+		public Type[] ForType 
 		{
 			get 
 			{
-				return typeof(VectorLayer);
+				return new [] {typeof(VectorLayer)};
 			}
 		}
 		
@@ -70,9 +69,111 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 
 			return res;
 		}
-		
 	}
-	
 
+    /// <summary>
+    /// 
+    /// </summary>
+	public class DefaultLabelLayerLegendItemFactory : ILegendItemFactory
+    {
+	    public Type[] ForType 
+        {
+	        get { return new [] {typeof (LabelLayer)}; }
+	    }
 
+	    public ILegendItem Create(ILegend legend, object item)
+	    {
+            if (item == null)
+                throw new ArgumentNullException("item");
+            if (!(item is LabelLayer))
+                throw new ArgumentException("Item is not a label layer", "item");
+
+            var vl = (LabelLayer)item;
+
+            ILegendItem res = null;
+            if (vl.Theme != null)
+            {
+                res = legend.Factory[vl.Theme].Create(legend, vl.Theme) ?? new LegendItem();
+                res.Label = vl.LayerName + res.Label ?? string.Empty;
+            }
+            else
+            {
+                res = legend.Factory[vl.Style].Create(legend, vl.Style) ?? new LegendItem();
+                res.Label = vl.LayerName;
+            }
+
+            res.LabelFont = legend.Factory.ItemFont;
+            res.LabelBrush = legend.Factory.ForeColor;
+            res.Padding = legend.Factory.Padding;
+            res.Exclude = !vl.Enabled;
+            res.Expanded = res.SubItems.Count > 0;
+
+            return res;
+        }
+    }
+
+    public class DefaultSymbolizerLayerLegendItemFactory : ILegendItemFactory
+    {
+        public Type[] ForType
+        {
+            get
+            {
+                return new [] {
+                    typeof(AnyGeometryVectorLayer),
+                    typeof(BaseVectorLayer<ILineal>),
+                    typeof(BaseVectorLayer<IPolygonal>),
+                    typeof(BaseVectorLayer<IPuntal>)
+                };
+            }
+        }
+
+        public ILegendItem Create(ILegend legend, object item)
+        {
+            if (item == null)
+                throw new ArgumentNullException("item");
+            
+            if (!(item is AnyGeometryVectorLayer ||
+                  item is PuntalVectorLayer || item is LinealVectorLayer || item is PolygonalVectorLayer))
+                throw new ArgumentException("Item is not a vector layer", "item");
+
+            var sym = GetSymbolizer(item);
+
+            ILegendItem res = null;
+            var symFac = legend.Factory[sym];
+            if (symFac != null)
+                res = symFac.Create(legend, sym) ?? new LegendItem();
+            else
+                res = new LegendItem();
+
+            res.Label = ((ILayer) item).LayerName;
+
+            res.LabelFont = legend.Factory.ItemFont;
+            res.LabelBrush = legend.Factory.ForeColor;
+            res.Padding = legend.Factory.Padding;
+            res.Exclude = !((ILayer)item).Enabled;
+            res.Expanded = res.SubItems.Count > 0;
+
+            return res;
+        }
+
+        private ISymbolizer GetSymbolizer(object item)
+        {
+            var agl = item as AnyGeometryVectorLayer;
+            if (agl != null)
+            {
+                return agl.Symbolizer;
+            }
+
+            if (item is BaseVectorLayer<IPuntal>)
+                return ((BaseVectorLayer<IPuntal>) item).Symbolizer;
+
+            if (item is BaseVectorLayer<ILineal>)
+                return ((BaseVectorLayer<ILineal>)item).Symbolizer;
+
+            if (item is BaseVectorLayer<IPolygonal>)
+                return ((BaseVectorLayer<IPolygonal>)item).Symbolizer;
+
+            throw new Exception("Should never reach here!");
+        }
+    }
 }

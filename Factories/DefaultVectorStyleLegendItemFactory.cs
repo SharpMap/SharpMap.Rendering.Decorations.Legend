@@ -18,9 +18,13 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.InteropServices;
+using GeoAPI.Geometries;
+using SharpMap.Data.Providers;
 using SharpMap.Layers;
+using SharpMap.Layers.Symbolizer;
+using SharpMap.Rendering.Symbolizer;
 using SharpMap.Styles;
-using SharpMap.Rendering.Thematics;
 
 namespace SharpMap.Rendering.Decoration.Legend.Factories
 {
@@ -57,7 +61,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 			return true;
 		}
 		
-		public Type ForType { get { return typeof(VectorStyle);}}
+		public Type[] ForType { get { return new [] {typeof(VectorStyle)};}}
 		
 		public ILegendItem Create(ILegend legend, object item)
 		{
@@ -91,20 +95,20 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 		
 		protected virtual ILegendItem CreatePuntalStyleLegendItem(ILegendFactory factory, VectorStyle vs)
 		{
-			return new LegendItem { Symbol = CreatePointSymbol(factory.SymbolSize, vs) };
+			return new LegendItem { Symbol = CreatePointSymbol(factory, factory.SymbolSize, vs) };
 		}
 		
 		protected virtual ILegendItem CreateLinealStyleLegendItem(ILegendFactory factory, VectorStyle vs)
 		{
-			return new LegendItem { Symbol = CreateLineSymbol(factory.SymbolSize, vs) };
+            return new LegendItem { Symbol = CreateLineSymbol(factory, factory.SymbolSize, vs) };
 		}
 		
 		protected virtual ILegendItem CreatePolygonalStyleLegendItem(ILegendFactory factory, VectorStyle vs)
 		{
-			return new LegendItem { Symbol = CreatePolygonalSymbol(factory.SymbolSize, vs) };
+            return new LegendItem { Symbol = CreatePolygonSymbol(factory, factory.SymbolSize, vs) };
 		}
 		
-		System.Drawing.Image CreatePointSymbol(Size symbolSize, VectorStyle vs)
+		private static Image CreatePointSymbol(ILegendFactory legend, Size symbolSize, VectorStyle vs)
 		{
 			var res = new System.Drawing.Bitmap(symbolSize.Width, symbolSize.Height);
 			using (var g = Graphics.FromImage(res))
@@ -122,42 +126,61 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 				}
 				else
 				{
-					
+				    return CreateSymbolizerImage(legend, vs.PointSymbolizer);
 				}
 			}
 			return res;
 		}
+
+	    private static Image CreateSymbolizerImage(ILegendFactory factory, ISymbolizer symbolizer)
+	    {
+            var lif = factory[symbolizer];
+            if (lif != null)
+            {
+                var item = lif.Create(null, symbolizer);
+                return item.Symbol;
+            }
+            return null;
+        }
 		
-		System.Drawing.Image CreateLineSymbol(Size symbolSize, VectorStyle vs)
+		private static Image CreateLineSymbol(ILegendFactory legend, Size symbolSize, VectorStyle vs)
 		{
-			var res = new System.Drawing.Bitmap(symbolSize.Width, symbolSize.Height);
+			var res = new Bitmap(symbolSize.Width, symbolSize.Height);
 			using (var g = Graphics.FromImage(res))
 			{
 				g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 				if (vs.LineSymbolizer == null)
 				{
-					var pts = new [] { new Point(2,22), new Point(8, 12), new Point(12, 13), new Point(22, 2)};
+                    var pts = new[] { new Point(2, symbolSize.Height - 4), new Point(symbolSize.Width/3, symbolSize.Height / 2), new Point(symbolSize.Width / 2, symbolSize.Height / 2 + 1), new Point(symbolSize.Width -4, 2) };
 					if (vs.EnableOutline)
 						g.DrawLines(vs.Outline, pts);
 					g.DrawLines(vs.Line, pts);
 				}
+				else
+				{
+                    return CreateSymbolizerImage(legend, vs.LineSymbolizer);
+                }
 			}
 			return res;
 		}
 	
-		System.Drawing.Image CreatePolygonalSymbol(Size symbolSize, VectorStyle vs)
+		private static Image CreatePolygonSymbol(ILegendFactory factory, Size symbolSize, VectorStyle vs)
 		{
-			var res = new System.Drawing.Bitmap(symbolSize.Width, symbolSize.Height);
+			var res = new Bitmap(symbolSize.Width, symbolSize.Height);
 			using (var g = Graphics.FromImage(res))
 			{
 				g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 				if (vs.PolygonSymbolizer == null)
 				{
-					var rect = new Rectangle(3,3, 18, 18);
+                    var rect = new Rectangle(3, 3, symbolSize.Width - 6, symbolSize.Height - 6);
 					g.FillRectangle(vs.Fill, rect);
 					g.DrawRectangle(vs.Outline, rect);
 				}
-			}
+                else
+				{
+                    return CreateSymbolizerImage(factory, vs.PolygonSymbolizer);
+				}
+            }
 			return res;
 		}
 	
