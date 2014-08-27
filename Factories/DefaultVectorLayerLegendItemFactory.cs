@@ -60,10 +60,10 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 				res = legend.Factory[vl.Style].Create(legend, vl.Style) ?? new LegendItem();
 				res.Label = vl.LayerName;
 			}
-
-			res.LabelFont = legend.Factory.ItemFont;
-			res.LabelBrush = legend.Factory.ForeColor;
-			res.Padding = legend.Factory.Padding;
+		    res.Item = item;
+			res.LabelFont = legend.Settings.ItemFont;
+            res.LabelBrush = legend.Settings.ForeColor;
+            res.Padding = legend.Settings.Padding;
 			res.Exclude = !vl.Enabled;
 			res.Expanded = res.SubItems.Count > 0;
 
@@ -102,11 +102,12 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
                 res.Label = vl.LayerName;
             }
 
-            res.LabelFont = legend.Factory.ItemFont;
-            res.LabelBrush = legend.Factory.ForeColor;
-            res.Padding = legend.Factory.Padding;
+            res.LabelFont = legend.Settings.ItemFont;
+            res.LabelBrush = legend.Settings.ForeColor;
+            res.Padding = legend.Settings.Padding;
             res.Exclude = !vl.Enabled;
             res.Expanded = res.SubItems.Count > 0;
+	        res.Item = item;
 
             return res;
         }
@@ -145,11 +146,12 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             else
                 res = new LegendItem();
 
+            res.Item = item;
             res.Label = ((ILayer) item).LayerName;
 
-            res.LabelFont = legend.Factory.ItemFont;
-            res.LabelBrush = legend.Factory.ForeColor;
-            res.Padding = legend.Factory.Padding;
+            res.LabelFont = legend.Settings.ItemFont;
+            res.LabelBrush = legend.Settings.ForeColor;
+            res.Padding = legend.Settings.Padding;
             res.Exclude = !((ILayer)item).Enabled;
             res.Expanded = res.SubItems.Count > 0;
 

@@ -1,0 +1,85 @@
+using System;
+using System.Drawing;
+using SharpMap.Rendering.Decoration.Legend.Properties;
+
+namespace SharpMap.Rendering.Decoration.Legend.Factories
+{
+    /// <summary>
+    /// Abstract base implementation of a legend item factory
+    /// </summary>
+    public abstract class AbstractLegendItemFactory : ILegendItemFactory
+    {
+        /// <summary>
+        /// The type this factory is intended for
+        /// </summary>
+        public abstract Type[] ForType { get; }
+
+        /// <summary>
+        /// Method to create the legend item
+        /// </summary>
+        /// <param name="legend">The legend a legend item should be created for</param>
+        /// <param name="item">The item to create a legend item for</param>
+        /// <returns>The legend item, if one could be created, otherwise <c>null</c></returns>
+        public virtual ILegendItem Create(ILegend legend, object item)
+        {
+            if (legend == null)
+                throw new ArgumentNullException("legend");
+
+
+            if (item == null)
+                throw new ArgumentNullException("item");
+
+            CheckType(item);
+
+            var settings = legend.Settings;
+
+            var res = new LegendItem
+            {
+                Label = CreateLabel(item),
+                Item = item,
+                Symbol = CreateSymbol(settings.SymbolSize, item),
+                LabelFont = settings.ItemFont,
+                Padding = settings.Padding,
+                Exclude = CheckExclude(item)
+            };
+            res.Expanded = CheckExpanded(res);
+            return res;
+        }
+
+        private void CheckType(object item)
+        {
+            var itemType = item.GetType();
+            foreach (var type in ForType)
+            {
+                if (type.IsAssignableFrom(itemType))
+                    return;
+
+                if (type.IsGenericTypeDefinition && itemType.IsGenericType)
+                {
+                    var gtd = itemType.GetGenericTypeDefinition();
+                    if (gtd == type)
+                        return;
+                }
+            }
+
+            throw new ArgumentException(Resources.invalidType, "item");
+        }
+
+        protected abstract string CreateLabel(object item);
+
+        protected virtual Image CreateSymbol(Size symbolSize, object item)
+        {
+            return null;
+        }
+
+        protected virtual bool CheckExclude(object item)
+        {
+            return false;
+        }
+
+        protected virtual bool CheckExpanded(ILegendItem item)
+        {
+            return item.SubItems.Count > 0;
+        }
+    }
+}

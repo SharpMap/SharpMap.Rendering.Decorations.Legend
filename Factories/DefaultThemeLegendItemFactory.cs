@@ -77,14 +77,17 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 			where T: IConvertible
 		{
 			var res = new LegendItem{ Label = " ("+ uvt.AttributeName+")",
-				LabelFont = legend.Factory.ItemFont, LabelBrush = legend.Factory.ForeColor,
-				Indentation = legend.Factory.SymbolSize.Width
+				LabelFont = legend.Settings.ItemFont, LabelBrush = legend.Settings.ForeColor,
+				Indentation = legend.Settings.SymbolSize.Width
 			};
 			
 			var defaultItem = legend.Factory[uvt.DefaultStyle].Create(legend, uvt.DefaultStyle);
 			defaultItem.Label = "(default)";
-			defaultItem.LabelBrush = legend.Factory.ForeColor;
-			defaultItem.LabelFont = legend.Factory.ItemFont;
+			defaultItem.LabelBrush = legend.Settings.ForeColor;
+			defaultItem.LabelFont = legend.Settings.ItemFont;
+		    defaultItem.Parent = res;
+		    defaultItem.Item = uvt.DefaultStyle;
+
 			res.SubItems.Add(defaultItem);
 			using(var fdt = CreateTable(uvt.AttributeName, typeof(T)))
 			{
@@ -96,8 +99,10 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 					var style = uvt.GetStyle(row);
 					var item = legend.Factory[style].Create(legend, style);
 					item.Label = uvt.UniqueValues[i];
-					item.LabelFont = legend.Factory.ItemFont;
-					item.LabelBrush = legend.Factory.ForeColor;
+					item.LabelFont = legend.Settings.ItemFont;
+					item.LabelBrush = legend.Settings.ForeColor;
+				    item.Parent = res;
+				    item.Item = style;
 					res.SubItems.Add(item);
 				}
 			}
@@ -108,7 +113,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 		ILegendItem CreateGradientThemeLegendItems(ILegend legend, GradientTheme gt)
 		{
 			var res = new LegendItem{ Label = " ("+gt.ColumnName+")" ,
-				Indentation = legend.Factory.SymbolSize.Width
+				Indentation = legend.Settings.SymbolSize.Width
 			};
 			var fcb = gt.FillColorBlend;
 			var lcb = gt.LineColorBlend;
@@ -118,10 +123,10 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 				var tmp = gt.Min + fcb.Positions[i] * (gt.Max - gt.Min);
 				var sl = new LegendItem {
 					Label = tmp.ToString("N"),
-					LabelFont = legend.Factory.ItemFont,
-					LabelBrush = tcb != null ? new SolidBrush(tcb.Colors[i]) : legend.Factory.ForeColor,
-					Symbol = CreateSymbol(legend.Factory.SymbolSize, fcb.Colors[i], lcb != null ? lcb.Colors[i] : Color.Transparent),
-					
+					LabelFont = legend.Settings.ItemFont,
+					LabelBrush = tcb != null ? new SolidBrush(tcb.Colors[i]) : legend.Settings.ForeColor,
+					Symbol = CreateSymbol(legend.Settings.SymbolSize, fcb.Colors[i], lcb != null ? lcb.Colors[i] : Color.Transparent),
+					Parent = res, Item = i
 				};
 				res.SubItems.Add(sl);
 			}
@@ -148,23 +153,26 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 			where T: IComparable<T>
 		{
 			var res = new LegendItem{ Label = " ("+ ct.ColumnName +")",
-				LabelFont = legend.Factory.ItemFont, LabelBrush = legend.Factory.ForeColor,
-				Indentation = legend.Factory.SymbolSize.Width
+				LabelFont = legend.Settings.ItemFont, LabelBrush = legend.Settings.ForeColor,
+				Indentation = legend.Settings.SymbolSize.Width
 			};
 			
 			var defaultItem = legend.Factory[ct.Default.Style].Create(legend, ct.Default.Style);
 			defaultItem.Label = "(" +  ct.Default.Title + ")";
-			defaultItem.LabelBrush = legend.Factory.ForeColor;
-			defaultItem.LabelFont = legend.Factory.ItemFont;
-			
+			defaultItem.LabelBrush = legend.Settings.ForeColor;
+			defaultItem.LabelFont = legend.Settings.ItemFont;
+		    defaultItem.Parent = res;
+
 			res.SubItems.Add(defaultItem);
 			foreach (var element in ct.ItemsAsReadOnly())
 			{
 				var style = element.Style;
 				var item = legend.Factory[style].Create(legend, style);
 				item.Label = element.Title;
-				item.LabelFont = legend.Factory.ItemFont;
-				item.LabelBrush = legend.Factory.ForeColor;
+				item.LabelFont = legend.Settings.ItemFont;
+				item.LabelBrush = legend.Settings.ForeColor;
+			    item.Parent = res;
+			    item.Item = style;
 				res.SubItems.Add(item);
 			}
 			

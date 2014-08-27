@@ -26,9 +26,19 @@ namespace SharpMap.Rendering.Decoration.Legend
     public interface ILegend : IMapDecoration
     {
         /// <summary>
+        /// Gets the map
+        /// </summary>
+        Map Map { get; }
+        
+        /// <summary>
         /// Gets or sets the root item of the legend
         /// </summary>
         ILegendItem Root { get; }
+
+        /// <summary>
+        /// Gets the settings of the legend
+        /// </summary>
+        ILegendSettings Settings { get; set; }
 
         /// <summary>
         /// Gets the factory that has been used to create this legend

@@ -18,7 +18,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using BruTile.Web.TmsService;
 using SharpMap.Layers;
+using Wintellect.PowerCollections;
 
 namespace SharpMap.Rendering.Decoration.Legend.Factories
 {
@@ -29,49 +31,23 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
     {
         private static readonly Dictionary<Type, ILegendItemFactory> LegendItemFactories =
             new Dictionary<Type, ILegendItemFactory>();
-        
-        /// <summary>
-        /// The forecolor of the header fonts
-        /// </summary>
-        public Brush ForeColor { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating the default header font
+        /// Get or sets the default legend settings
         /// </summary>
-        public Font HeaderFont { get; set; }
+        public ILegendSettings LegendSettings { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating the default item font
-        /// </summary>
-        public Font ItemFont { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating the default indentation value
-        /// </summary>
-        public int Indentation { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating the default padding between items
-        /// </summary>
-        public Size Padding { get; set; }
-        
-        /// <summary>
-        /// Gets or sets a value indicating the default symbol size
-        /// </summary>
-        public Size SymbolSize { get; set; }
-
+        public LegendFactory()
+            :this(new LegendSettings(new Font("Arial", 12, FontStyle.Bold), new Font("Arial", 8, FontStyle.Regular), 
+                new Size(16, 16), new Size(3, 3)))
+        {}
         /// <summary>
         /// Creates an instance of this class
         /// </summary>
-        public LegendFactory()
+        public LegendFactory(ILegendSettings settings)
         {
-            ForeColor = Brushes.DarkSlateBlue;
-            HeaderFont = new Font("Arial", 14, FontStyle.Bold, GraphicsUnit.Pixel);
-            ItemFont = new Font("Arial", 11, FontStyle.Regular, GraphicsUnit.Pixel);
-            SymbolSize = new Size(16, 16);
-            Indentation = SymbolSize.Width;
-            Padding = new Size(3, 3);
-            
+            LegendSettings = settings;
+
             Register(new DefaultLayerGroupLegendItemFactory());
             Register(new DefaultVectorLayerLegendItemFactory());
             Register(new DefaultVectorStyleLegendItemFactory());
@@ -87,7 +63,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         /// <returns>A legend map decoration</returns>
         public virtual ILegend Create(Map map)
         {
-            var res = new Legend(map, this) {Root = {Label = "Map", LabelFont = HeaderFont, LabelBrush = ForeColor}};
+            var res = new Legend(map, this) {Root = {Label = "Map", LabelFont = LegendSettings.HeaderFont, LabelBrush = LegendSettings.ForeColor, Item = map}};
 
             if (map.VariableLayers.Count > 0)
             {
@@ -150,12 +126,14 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         {
             var res = new LegendItem
             {
-                Indentation = Indentation,
+                Indentation = LegendSettings.Indentation,
                 Label = title,
-                LabelFont = HeaderFont,
-                LabelBrush = ForeColor,
+                LabelFont = LegendSettings.HeaderFont,
+                LabelBrush = LegendSettings.ForeColor,
                 Expanded = true,
-                Padding = Padding,
+                Padding = LegendSettings.Padding,
+                Parent = legend.Root,
+                Item = layerCollection
             };
 
             for (var i = layerCollection.Count-1; i >= 0; i--)
@@ -182,11 +160,11 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 
             return new LegendItem
             {
-                Label = layer.LayerName, LabelFont = ItemFont, LabelBrush = ForeColor,
+                Label = layer.LayerName, LabelFont = LegendSettings.ItemFont, LabelBrush = LegendSettings.ForeColor,
                 Symbol = CreateGenericSymbol(layer),
                 Exclude = !layer.Enabled,
-                Indentation = Indentation,
-                Padding = Padding,
+                Indentation = LegendSettings.Indentation,
+                Padding = LegendSettings.Padding,
                 Expanded = true
             };
         }
@@ -198,11 +176,11 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         /// <returns></returns>
         private Image CreateGenericSymbol(ILayer layer)
         {
-            if (SymbolSize == Size.Empty)
+            if (LegendSettings.SymbolSize == Size.Empty)
                 return null;
 
             Image tmp;
-            using (var m = new Map(new Size(10*SymbolSize.Width, 10*SymbolSize.Height)))
+            using (var m = new Map(new Size(10*LegendSettings.SymbolSize.Width, 10*LegendSettings.SymbolSize.Height)))
             {
                 m.Layers.Add(layer);
                 m.ZoomToExtents();
@@ -212,10 +190,10 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
                 m.Layers.Remove(layer);
             }
             
-           var res = new Bitmap(SymbolSize.Width, SymbolSize.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+           var res = new Bitmap(LegendSettings.SymbolSize.Width, LegendSettings.SymbolSize.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
            using (var g = Graphics.FromImage(res))
            {
-           		g.DrawImage(tmp, new Rectangle(0, 0, SymbolSize.Width, SymbolSize.Height),
+           		g.DrawImage(tmp, new Rectangle(0, 0, LegendSettings.SymbolSize.Width, LegendSettings.SymbolSize.Height),
            	                 	 new Rectangle(0, 0, tmp.Width, tmp.Height), GraphicsUnit.Pixel);
            }
                    

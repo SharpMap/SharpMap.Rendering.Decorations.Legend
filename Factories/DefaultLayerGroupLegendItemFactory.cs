@@ -39,7 +39,8 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 
             var res = new LayerGroupLegendItem 
             {
-                Label = layerGroup.LayerName, LabelFont = legend.Factory.ItemFont, LabelBrush = legend.Factory.ForeColor
+                Label = layerGroup.LayerName, LabelFont = legend.Settings.ItemFont, LabelBrush = legend.Settings.ForeColor
+                ,Item = item
             };
 
             foreach (var layer in layerGroup.Layers)
@@ -47,7 +48,9 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
                 var lif = legend.Factory[layer];
                 if (lif != null)
                 {
-                    res.SubItems.Add(lif.Create(legend, layer));
+                    var nli = lif.Create(legend, layer);
+                    nli.Parent = res;
+                    res.SubItems.Add(nli);
                 }
             }
 

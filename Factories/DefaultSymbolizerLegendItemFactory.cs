@@ -1,10 +1,8 @@
 using System;
 using System.Drawing;
-using System.Drawing.Text;
 using System.Linq;
 using GeoAPI.Geometries;
 using SharpMap.Data.Providers;
-using SharpMap.Layers;
 using SharpMap.Layers.Symbolizer;
 using SharpMap.Rendering.Symbolizer;
 
@@ -80,11 +78,26 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 
             var res = new LegendItem();
             if (IsPointSymbolizer(sym))
-                res.SubItems.Add(CreateSymbolizerLegendItem(legend.Factory, CreatePuntalSymbol(legend.Factory.SymbolSize, sym)));
+            {
+                var nli = CreateSymbolizerLegendItem(legend.Settings, CreatePuntalSymbol(legend.Settings.SymbolSize, sym));
+                nli.Parent = res;
+                nli.Item = sym;
+                res.SubItems.Add(nli);
+            }
             if (IsLineSymbolizer(sym))
-                res.SubItems.Add(CreateSymbolizerLegendItem(legend.Factory, CreateLinealSymbol(legend.Factory.SymbolSize, sym)));
+            {
+                var nli = CreateSymbolizerLegendItem(legend.Settings, CreateLinealSymbol(legend.Settings.SymbolSize, sym));
+                nli.Parent = res;
+                nli.Item = sym;
+                res.SubItems.Add(nli);
+            }
             if (IsPolygonSymbolizer(sym))
-                res.SubItems.Add(CreateSymbolizerLegendItem(legend.Factory, CreatePolygonalSymbol(legend.Factory.SymbolSize, sym)));
+            {
+                var nli = CreateSymbolizerLegendItem(legend.Settings, CreatePolygonalSymbol(legend.Settings.SymbolSize, sym));
+                nli.Parent = res;
+                nli.Item = sym;
+                res.SubItems.Add(nli);
+            }
 
             if (res.SubItems.Count == 0)
                 return new LegendItem();
@@ -92,18 +105,19 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
                 return res.SubItems.First();
 
             res.Expanded = true;
-            res.Padding = legend.Factory.Padding;
-            res.Indentation = legend.Factory.SymbolSize.Width;
+            res.Padding = legend.Settings.Padding;
+            res.Indentation = legend.Settings.SymbolSize.Width;
 
             return res;
         }
 
-        private static ILegendItem CreateSymbolizerLegendItem(ILegendFactory factory, Image symbol)
+        private static ILegendItem CreateSymbolizerLegendItem(ILegendSettings settings, Image symbol)
         {
             return new LegendItem
             {
                 Symbol =  symbol,
-                LabelFont = factory.ItemFont
+                LabelFont = settings.ItemFont
+                
             };
 
         }

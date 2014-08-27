@@ -1,5 +1,4 @@
 using System.Drawing;
-using System.Runtime.InteropServices;
 using SharpMap.Rendering.Decoration.Legend.Factories;
 
 namespace SharpMap.Rendering.Decoration.Legend
@@ -11,37 +10,65 @@ namespace SharpMap.Rendering.Decoration.Legend
     {
         private readonly Map _map;
         private readonly ILegendFactory _factory;
+        private ILegendSettings _settings;
 
         public Legend(Map map, ILegendFactory factory = null)
         {
             _map = map;
             _factory = factory ?? new LegendFactory();
+            _settings = _factory.LegendSettings;
+
             Root = new LegendItem { Expanded = true };
         }
-        
+
+
+        /// <summary>
+        /// Gets the map
+        /// </summary>
+        public Map Map
+        {
+            get { return _map; }
+        }
+
+        /// <summary>
+        /// Method to regenerate the map legend
+        /// </summary>
+        public void Regenerate()
+        {
+            var root = _factory[_map].Create(this, _map);
+            Root = root;
+        }
+
         protected override Size InternalSize(Graphics g, Map map)
         {
             return Root.InternalSize(g, map);
         }
 
+        /// <summary>
+        /// Gets the factory that has been used to create this legend
+        /// </summary>
         public ILegendFactory Factory { get { return _factory; } }
+
+        /// <summary>
+        /// Gets the settings of the legend
+        /// </summary>
+        public ILegendSettings Settings
+        {
+            get { return _settings; }
+            set { _settings = value; }
+        }
 
         /// <summary>
         /// Gets or sets the root item of the legend
         /// </summary>
         public ILegendItem Root { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating the indentation performed on
-        /// </summary>
-        public int Indentation { get; set; }
-
-        private System.Drawing.Drawing2D.SmoothingMode _sm;
+        private System.Drawing.Drawing2D.SmoothingMode _smoothingMode;
         
 		protected override void OnRendering(Graphics g, Map map)
 		{
 			base.OnRendering(g, map);
-			_sm = g.SmoothingMode;
+            _smoothingMode = g.SmoothingMode;
 			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 		}
         /// <summary>
@@ -58,7 +85,7 @@ namespace SharpMap.Rendering.Decoration.Legend
 
 		protected override void OnRendered(Graphics g, Map map)
 		{
-			g.SmoothingMode = _sm;
+            g.SmoothingMode = _smoothingMode;
 			base.OnRendered(g, map);
 		}
         /// <summary>

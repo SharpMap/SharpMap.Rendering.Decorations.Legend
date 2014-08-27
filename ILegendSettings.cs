@@ -17,36 +17,38 @@
 
 using System.Drawing;
 
-namespace SharpMap.Rendering.Decoration.Legend.Factories
+namespace SharpMap.Rendering.Decoration.Legend
 {
-    /// <summary>
-    /// An interface for classes that can create legend <see cref="IMapDecoration"/>s.
-    /// </summary>
-    public interface ILegendFactory
+    public interface ILegendSettings
     {
         /// <summary>
-        /// Method to create a legend <see cref="IMapDecoration"/> for the provided map
+        /// Gets or sets the font to write a header with
         /// </summary>
-        /// <param name="map">The map</param>
-        /// <returns>A legend map decoration</returns>
-        ILegend Create(Map map);
+        Font HeaderFont { get; }
 
         /// <summary>
-        /// Method to register a legend item factory
+        /// Gets or sets the font to write an item with
         /// </summary>
-        /// <param name="itemFactory">The item factory to register</param>
-        void Register(ILegendItemFactory itemFactory);
+        Font ItemFont { get; }
 
         /// <summary>
-        /// Indexer for legend item factories
+        /// Gets or sets the brush to write header or label with
         /// </summary>
-        /// <param name="item">The item to get a factory for</param>
-        /// <returns>A factory to create a legend item</returns>
-        ILegendItemFactory this[object item] { get; }
+        Brush ForeColor { get; }
 
         /// <summary>
-        /// Get or sets the default legend settings
+        /// Gets or sets the default padding between items
         /// </summary>
-        ILegendSettings LegendSettings { get; set; }
+        Size Padding { get; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the default indentation value
+        /// </summary>
+        int Indentation { get; }
+
+        /// <summary>
+        /// Gets or sets the default padding between items
+        /// </summary>
+        Size SymbolSize { get; }
     }
 }

@@ -17,6 +17,7 @@
     
 using System.Collections.Generic;
 using System.Drawing;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SharpMap.Rendering.Decoration.Legend
 {
@@ -77,5 +78,15 @@ namespace SharpMap.Rendering.Decoration.Legend
         /// Gets a collection of sub items. These can be of type <see cref="IMapDecoration"/>
         /// </summary>
         ICollection<ILegendItem> SubItems { get; }
+
+        /// <summary>
+        /// Gets or sets the item displayed
+        /// </summary>
+        object Item { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent item
+        /// </summary>
+        ILegendItem Parent { get; set; }
     }
 }

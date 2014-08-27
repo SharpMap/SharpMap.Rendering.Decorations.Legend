@@ -25,7 +25,7 @@ namespace SharpMap.Rendering.Decoration.Legend
     /// <summary>
     /// Implementation of a legend item
     /// </summary>
-    internal class LegendItem : /*MapDecoration,*/ ILegendItem
+    internal class LegendItem : ILegendItem
     {
         /// <summary>
         /// Creates an instance of this class
@@ -33,8 +33,6 @@ namespace SharpMap.Rendering.Decoration.Legend
         public LegendItem()
         {
             SubItems = new Collection<ILegendItem>();
-            //Anchor = SharpMap.Rendering.Decoration.MapDecorationAnchor.LeftTop;
-            //Location = Point.Empty;
         }
         
         Size ILegendItem.InternalSize(Graphics g, Map map)
@@ -140,6 +138,16 @@ namespace SharpMap.Rendering.Decoration.Legend
         public ICollection<ILegendItem> SubItems { get; private set; }
 
         /// <summary>
+        /// Gets or sets the item displayed
+        /// </summary>
+        public object Item { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent item
+        /// </summary>
+        public ILegendItem Parent { get; set; }
+
+        /// <summary>
         /// Function to render the actual map decoration
         /// </summary>
         /// <param name="g"/><param name="map"/>
@@ -181,7 +189,39 @@ namespace SharpMap.Rendering.Decoration.Legend
             }
 
         }
+
+        internal class SeparatorLegendItem : ILegendItem
+        {
+            private Pen _pen;
+
+            public void Render(Graphics g, Map map)
+            {
+                g.DrawLine(Pen, new Point(0, Padding.Height), 
+                                new Point((int)g.ClipBounds.Width - (int)g.Transform.OffsetX - Padding.Width, Padding.Height) ); 
+            }
+
+            public Pen Pen
+            {
+                get { return _pen ?? Pens.Black; }
+                set { _pen = value; }
+            }
+
+            public bool Exclude { get { return false; } set{} }
+            public Image Symbol { get { return null; } set { } }
+            public string Label { get { return string.Empty; } set { } }
+            public Font LabelFont { get { return null; } set { } }
+            public Brush LabelBrush { get { return null; } set{} }
+            public Size InternalSize(Graphics g, Map map) { return Size.Empty; }
+            public Size Padding { get { return Size.Empty; } set {}}
+            public int Indentation { get { return 0; } set {}}
+            public bool Expanded { get { return false; } set { } }
+            public ICollection<ILegendItem> SubItems { get{ return new Collection<ILegendItem>();} }
+            public object Item { get { return null; } set { } }
+            public ILegendItem Parent { get; set; }
+        }
         
-        
+        //internal class AbstractReadonlyLegendItem : ILegendItem
+
+        //internal class MapDecorationLegendItem : ILegendItem
     }
 }

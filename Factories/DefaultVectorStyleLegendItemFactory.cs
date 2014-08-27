@@ -86,26 +86,32 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 				return lis[0];
 	
 			var res = new LegendItem();
-			res.Indentation = legend.Factory.SymbolSize.Width;
-				foreach (var li in lis) {
-					res.SubItems.Add(li);
+            res.Indentation = legend.Settings.SymbolSize.Width;
+		    res.Item = item;
+			foreach (var li in lis) 
+            {
+				{
+				    li.Parent = res;
+				    li.Item = vs;
+				    res.SubItems.Add(li);
 				}
-				return res;
+			}
+			return res;
 		}
 		
 		protected virtual ILegendItem CreatePuntalStyleLegendItem(ILegendFactory factory, VectorStyle vs)
 		{
-			return new LegendItem { Symbol = CreatePointSymbol(factory, factory.SymbolSize, vs) };
+            return new LegendItem { Symbol = CreatePointSymbol(factory, factory.LegendSettings.SymbolSize, vs) };
 		}
 		
 		protected virtual ILegendItem CreateLinealStyleLegendItem(ILegendFactory factory, VectorStyle vs)
 		{
-            return new LegendItem { Symbol = CreateLineSymbol(factory, factory.SymbolSize, vs) };
+            return new LegendItem { Symbol = CreateLineSymbol(factory, factory.LegendSettings.SymbolSize, vs) };
 		}
 		
 		protected virtual ILegendItem CreatePolygonalStyleLegendItem(ILegendFactory factory, VectorStyle vs)
 		{
-            return new LegendItem { Symbol = CreatePolygonSymbol(factory, factory.SymbolSize, vs) };
+            return new LegendItem { Symbol = CreatePolygonSymbol(factory, factory.LegendSettings.SymbolSize, vs) };
 		}
 		
 		private static Image CreatePointSymbol(ILegendFactory legend, Size symbolSize, VectorStyle vs)
