@@ -11,16 +11,17 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             get { return new[] {typeof (Map)}; }
         }
 
-        public override ILegendItem Create(ILegend legend, object item)
+        public override ILegendItem Create(ILegendSettings legend, object item)
         {
             var res = base.Create(legend, item);
 
             var map = (Map) item;
             var scale = string.Format("1:{0:N0}", map.MapScale);
-            res.SubItems.Add(legend.Factory[scale].Create(legend, scale));
-            res.SubItems.Add(legend.Factory[map.BackgroundLayer].Create(legend, map.VariableLayers));
-            res.SubItems.Add(legend.Factory[map.BackgroundLayer].Create(legend, map.Layers));
-            res.SubItems.Add(legend.Factory[map.BackgroundLayer].Create(legend, map.BackgroundLayer));
+            res.SubItems.Add(Factory[scale].Create(legend, scale));
+
+            res.SubItems.Add(Factory[map.BackgroundLayer].Create(legend, map.VariableLayers));
+            res.SubItems.Add(Factory[map.BackgroundLayer].Create(legend, map.Layers));
+            res.SubItems.Add(Factory[map.BackgroundLayer].Create(legend, map.BackgroundLayer));
 
             return res;
         }

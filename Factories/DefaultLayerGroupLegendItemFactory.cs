@@ -23,11 +23,11 @@ using SharpMap.Layers;
 
 namespace SharpMap.Rendering.Decoration.Legend.Factories
 {
-    internal class DefaultLayerGroupLegendItemFactory : ILegendItemFactory
+    internal class DefaultLayerGroupLegendItemFactory : AbstractLegendItemFactory 
     {
-        public Type[] ForType { get { return new [] {typeof (LayerGroup)}; }}
+        public override Type[] ForType { get { return new [] {typeof (LayerGroup)}; }}
 
-        public ILegendItem Create(ILegend legend, object item)
+        public override ILegendItem Create(ILegendSettings settings, object item)
         {
             if (item == null)
                 throw new ArgumentNullException("item");
@@ -37,18 +37,23 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 
             var layerGroup = (LayerGroup) item;
 
-            var res = new LayerGroupLegendItem 
+            var res = new LayerGroupLegendItem
             {
-                Label = layerGroup.LayerName, LabelFont = legend.Settings.ItemFont, LabelBrush = legend.Settings.ForeColor
-                ,Item = item
+                Label = layerGroup.LayerName,
+                LabelFont = settings.ItemFont,
+                LabelBrush = settings.ForeColor,
+                Item = item
             };
 
-            foreach (var layer in layerGroup.Layers)
+            var lrs = new Layer[layerGroup.Layers.Count];
+            layerGroup.Layers.CopyTo(lrs, 0);
+            Array.Reverse(lrs);
+            foreach (var layer in lrs)
             {
-                var lif = legend.Factory[layer];
+                var lif = Factory[layer];
                 if (lif != null)
                 {
-                    var nli = lif.Create(legend, layer);
+                    var nli = lif.Create(settings, layer);
                     nli.Parent = res;
                     res.SubItems.Add(nli);
                 }

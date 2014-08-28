@@ -126,10 +126,10 @@ namespace SharpMap.Rendering.Decoration.Legend
 					var factory = new LegendFactory();
 					((LegendSettings)factory.LegendSettings).SymbolSize = new Size(16, 16);
                     ((LegendSettings)factory.LegendSettings).HeaderFont = new Font("Times New Roman", 8, FontStyle.Italic);
-					var legend = factory.Create(map);
+					var legend = factory.Create(map, null);
 					((MapDecoration)legend).BackgroundColor = System.Drawing.Color.White;
 					legend.Root.Label = "This is a super long legend title";
-					using (var img = legend.GetLegendImage(300))
+					using (var img = legend.GetLegendImage())
 					{
 						img.Save("legendimage.png");
 						System.Diagnostics.Process.Start("legendimage.png");
@@ -171,7 +171,7 @@ namespace SharpMap.Rendering.Decoration.Legend
                     var factory = new LegendFactory();
                     ((LegendSettings)factory.LegendSettings).SymbolSize = new Size(24, 24);
                     ((LegendSettings)factory.LegendSettings).HeaderFont = new Font("Times New Roman", 14, FontStyle.Italic, GraphicsUnit.Pixel);
-                    var legend = factory.Create(map);
+                    var legend = factory.Create(map, null);
                     ((MapDecoration)legend).BackgroundColor = System.Drawing.Color.White;
                     legend.Root.Label = "This is a super long legend title";
                     using (var img = legend.GetLegendImage(300))

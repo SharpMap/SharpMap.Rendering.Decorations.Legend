@@ -12,13 +12,13 @@ namespace SharpMap.Rendering.Decoration.Legend
         private readonly ILegendFactory _factory;
         private ILegendSettings _settings;
 
-        public Legend(Map map, ILegendFactory factory = null)
+        public Legend(Map map, ILegendFactory factory = null, ILegendSettings settings = null)
         {
             _map = map;
             _factory = factory ?? new LegendFactory();
-            _settings = _factory.LegendSettings;
+            _settings = settings ?? new LegendSettings();
 
-            Root = new LegendItem { Expanded = true };
+            //Regenerate();
         }
 
 
@@ -35,10 +35,19 @@ namespace SharpMap.Rendering.Decoration.Legend
         /// </summary>
         public void Regenerate()
         {
-            var root = _factory[_map].Create(this, _map);
-            Root = root;
+            Root = Factory.Create(_map, Settings).Root;
         }
 
+        /// <summary>
+        /// Function to compute the required size for rendering the map decoration object
+        /// <para>
+        /// This is just the size of the decoration object, border settings are excluded
+        /// </para>
+        /// </summary>
+        /// <param name="g">The graphics object</param><param name="map">The map</param>
+        /// <returns>
+        /// The size of the map decoration
+        /// </returns>
         protected override Size InternalSize(Graphics g, Map map)
         {
             return Root.InternalSize(g, map);

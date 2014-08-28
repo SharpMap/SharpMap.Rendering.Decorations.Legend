@@ -48,37 +48,51 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         {
             LegendSettings = settings;
 
+            Register(new DefaultTextLegendItemFactory());
+            Register(new DefaultImageLegendItemFactory());
+            Register(new DefaultMapLegendItemFactory());
             Register(new DefaultLayerGroupLegendItemFactory());
+            Register(new DefaultLayerCollectionLegendItemFactory());
             Register(new DefaultVectorLayerLegendItemFactory());
             Register(new DefaultVectorStyleLegendItemFactory());
             Register(new DefaultThemeLegendItemFactory());
             Register(new DefaultSymbolizerLegendItemFactory());
             Register(new DefaultSymbolizerLayerLegendItemFactory());
+            Register(new DefaultLayerLegendItemFactory());
         }
 
         /// <summary>
         /// Method to create a legend <see cref="IMapDecoration"/> for the provided map
         /// </summary>
         /// <param name="map">The map</param>
+        /// <param name="settings"></param>
         /// <returns>A legend map decoration</returns>
-        public virtual ILegend Create(Map map)
+        public virtual ILegend Create(Map map, ILegendSettings settings = null)
         {
-            var res = new Legend(map, this) {Root = {Label = "Map", LabelFont = LegendSettings.HeaderFont, LabelBrush = LegendSettings.ForeColor, Item = map}};
+            settings = settings ?? LegendSettings;
 
-            if (map.VariableLayers.Count > 0)
+            var res = new Legend(map, this, settings)
             {
-                res.Root.SubItems.Add(Create(res, "Variable", map.VariableLayers));
-            }
+                Root = new LegendItem
+                {
+                    Label = "Map",
+                    LabelFont = settings.HeaderFont,
+                    LabelBrush = settings.ForeColor,
+                    Item = map,
+                    Expanded = true
+                    
+                }
+            };
+
+            var lif = ((ILegendFactory) this)[ map.Layers];
+            if (map.VariableLayers.Count > 0)
+                res.Root.SubItems.Add(lif.Create(LegendSettings, map.VariableLayers));
 
             if (map.Layers.Count > 0)
-            {
-                res.Root.SubItems.Add(Create(res, "Static", map.Layers));
-            }
+                res.Root.SubItems.Add(lif.Create(LegendSettings, map.Layers));
 
             if (map.BackgroundLayer.Count > 0)
-            {
-                res.Root.SubItems.Add(Create(res, "Background", map.BackgroundLayer));
-            }
+                res.Root.SubItems.Add(lif.Create(LegendSettings, map.BackgroundLayer));
 
             res.BorderColor = Color.Tomato;
             res.BorderMargin = new Size(5, 5);
@@ -109,6 +123,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         /// <param name="itemFactory"></param>
         public void Register(ILegendItemFactory itemFactory)
         {
+            itemFactory.Factory = this;
             foreach (var forType in itemFactory.ForType    )
             {
                 LegendItemFactories[forType] = itemFactory;
@@ -118,11 +133,11 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         /// <summary>
         /// Method to create a legend item for a layer collection
         /// </summary>
-        /// <param name="legend">The legend</param>
+        /// <param name="settings">The legend</param>
         /// <param name="title">The title</param>
         /// <param name="layerCollection">The layer collection</param>
         /// <returns>The created legend item</returns>
-        protected virtual ILegendItem Create(ILegend legend, string title, LayerCollection layerCollection)
+        protected virtual ILegendItem Create(ILegendSettings settings, string title, LayerCollection layerCollection)
         {
             var res = new LegendItem
             {
@@ -132,7 +147,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
                 LabelBrush = LegendSettings.ForeColor,
                 Expanded = true,
                 Padding = LegendSettings.Padding,
-                Parent = legend.Root,
+                //Parent = legend.Root,
                 Item = layerCollection
             };
 
@@ -140,7 +155,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             {
             	var layer = layerCollection[i];
             
-                var item = Create(legend, layer);
+                var item = Create(settings, layer);
             	res.SubItems.Add(item);
             }
             return res;
@@ -149,14 +164,14 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         /// <summary>
         /// Method to create a legend item for a layer
         /// </summary>
-        /// <param name="legend">The legend </param>
+        /// <param name="settings">The legend settings</param>
         /// <param name="layer">The layer to create an item for</param>
         /// <returns>A legend item</returns>
-        protected virtual ILegendItem Create(ILegend legend, ILayer layer)
+        protected virtual ILegendItem Create(ILegendSettings settings, ILayer layer)
         {
             var factory = LookUpFactory(layer.GetType());
             if (factory != null)
-                return factory.Create(legend, layer);
+                return factory.Create(settings, layer);
 
             return new LegendItem
             {

@@ -28,12 +28,12 @@ using SharpMap.Styles;
 
 namespace SharpMap.Rendering.Decoration.Legend.Factories
 {
-	public class DefaultVectorStyleLegendItemFactory : ILegendItemFactory
+	public class DefaultVectorStyleLegendItemFactory : AbstractLegendItemFactory
 	{
-		private static bool HasPuntalStyle(VectorStyle style)
+	    private static bool HasPuntalStyle(VectorStyle style)
 		{
 			return ((style.Symbol != null) ||
-			        (style.PointColor != null && style.PointColor != System.Drawing.Brushes.Transparent)
+			        (style.PointColor != null && style.PointColor != Brushes.Transparent)
 			       );
 		}
 		
@@ -60,10 +60,13 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 			
 			return true;
 		}
-		
-		public Type[] ForType { get { return new [] {typeof(VectorStyle)};}}
-		
-		public ILegendItem Create(ILegend legend, object item)
+
+	    public override Type[] ForType
+	    {
+	        get { return new [] {typeof(VectorStyle)};; }
+	    }
+
+		public override ILegendItem Create(ILegendSettings settings, object item)
 		{
 			if (item == null)
 				throw new ArgumentNullException("item");
@@ -74,11 +77,11 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 			
 			var lis = new List<ILegendItem>(3);
 			if (HasPuntalStyle(vs)) 
-				lis.Add(CreatePuntalStyleLegendItem(legend.Factory, vs));
+				lis.Add(CreatePuntalStyleLegendItem(Factory, settings, vs));
 			if (HasLinealStyle(vs)) 
-				lis.Add(CreateLinealStyleLegendItem(legend.Factory, vs));
+				lis.Add(CreateLinealStyleLegendItem(Factory, settings, vs));
 			if (HasPolygonalStyle(vs)) 
-				lis.Add(CreatePolygonalStyleLegendItem(legend.Factory, vs));
+				lis.Add(CreatePolygonalStyleLegendItem(Factory, settings, vs));
 			
 			if (lis.Count < 1)
 				return new LegendItem();
@@ -86,7 +89,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 				return lis[0];
 	
 			var res = new LegendItem();
-            res.Indentation = legend.Settings.SymbolSize.Width;
+            res.Indentation = settings.SymbolSize.Width;
 		    res.Item = item;
 			foreach (var li in lis) 
             {
@@ -98,20 +101,20 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 			}
 			return res;
 		}
-		
-		protected virtual ILegendItem CreatePuntalStyleLegendItem(ILegendFactory factory, VectorStyle vs)
+
+	    protected virtual ILegendItem CreatePuntalStyleLegendItem(ILegendFactory factory, ILegendSettings settings, VectorStyle vs)
 		{
-            return new LegendItem { Symbol = CreatePointSymbol(factory, factory.LegendSettings.SymbolSize, vs) };
+            return new LegendItem { Symbol = CreatePointSymbol(factory, settings.SymbolSize, vs) };
 		}
-		
-		protected virtual ILegendItem CreateLinealStyleLegendItem(ILegendFactory factory, VectorStyle vs)
+
+        protected virtual ILegendItem CreateLinealStyleLegendItem(ILegendFactory factory, ILegendSettings settings, VectorStyle vs)
 		{
-            return new LegendItem { Symbol = CreateLineSymbol(factory, factory.LegendSettings.SymbolSize, vs) };
+            return new LegendItem { Symbol = CreateLineSymbol(factory, settings.SymbolSize, vs) };
 		}
-		
-		protected virtual ILegendItem CreatePolygonalStyleLegendItem(ILegendFactory factory, VectorStyle vs)
+
+        protected virtual ILegendItem CreatePolygonalStyleLegendItem(ILegendFactory factory, ILegendSettings settings, VectorStyle vs)
 		{
-            return new LegendItem { Symbol = CreatePolygonSymbol(factory, factory.LegendSettings.SymbolSize, vs) };
+            return new LegendItem { Symbol = CreatePolygonSymbol(factory, settings.SymbolSize, vs) };
 		}
 		
 		private static Image CreatePointSymbol(ILegendFactory legend, Size symbolSize, VectorStyle vs)

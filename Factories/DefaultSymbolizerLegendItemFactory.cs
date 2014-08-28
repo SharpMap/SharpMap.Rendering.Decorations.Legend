@@ -10,6 +10,14 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 {
     public class DefaultSymbolizerLegendItemFactory : ILegendItemFactory
     {
+        private ILegendFactory _factory;
+
+        public ILegendFactory Factory
+        {
+            get { return _factory; }
+            set { _factory = value; }
+        }
+
         public Type[] ForType { get { return new [] {typeof (ISymbolizer)}; } }
 
         private static bool IsPointSymbolizer(ISymbolizer symolizer)
@@ -67,7 +75,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             return factory.ToGeometry(new Envelope(2, size.Width - 4, 2, size.Height - 4));
         }
 
-        public ILegendItem Create(ILegend legend, object item)
+        public ILegendItem Create(ILegendSettings settings, object item)
         {
             if (item == null)
                 throw new ArgumentNullException("item");
@@ -79,21 +87,21 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             var res = new LegendItem();
             if (IsPointSymbolizer(sym))
             {
-                var nli = CreateSymbolizerLegendItem(legend.Settings, CreatePuntalSymbol(legend.Settings.SymbolSize, sym));
+                var nli = CreateSymbolizerLegendItem(settings, CreatePuntalSymbol(settings.SymbolSize, sym));
                 nli.Parent = res;
                 nli.Item = sym;
                 res.SubItems.Add(nli);
             }
             if (IsLineSymbolizer(sym))
             {
-                var nli = CreateSymbolizerLegendItem(legend.Settings, CreateLinealSymbol(legend.Settings.SymbolSize, sym));
+                var nli = CreateSymbolizerLegendItem(settings, CreateLinealSymbol(settings.SymbolSize, sym));
                 nli.Parent = res;
                 nli.Item = sym;
                 res.SubItems.Add(nli);
             }
             if (IsPolygonSymbolizer(sym))
             {
-                var nli = CreateSymbolizerLegendItem(legend.Settings, CreatePolygonalSymbol(legend.Settings.SymbolSize, sym));
+                var nli = CreateSymbolizerLegendItem(settings, CreatePolygonalSymbol(settings.SymbolSize, sym));
                 nli.Parent = res;
                 nli.Item = sym;
                 res.SubItems.Add(nli);
@@ -105,8 +113,8 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
                 return res.SubItems.First();
 
             res.Expanded = true;
-            res.Padding = legend.Settings.Padding;
-            res.Indentation = legend.Settings.SymbolSize.Width;
+            res.Padding = settings.Padding;
+            res.Indentation = settings.SymbolSize.Width;
 
             return res;
         }

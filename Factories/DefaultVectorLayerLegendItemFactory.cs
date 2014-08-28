@@ -30,9 +30,9 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 	/// <summary>
 	/// Description of DefaultVectorLayerLegendItemFactory.
 	/// </summary>
-	public class DefaultVectorLayerLegendItemFactory : ILegendItemFactory
+	public class DefaultVectorLayerLegendItemFactory : AbstractLegendItemFactory
 	{
-		public Type[] ForType 
+	    public override Type[] ForType 
 		{
 			get 
 			{
@@ -40,7 +40,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 			}
 		}
 		
-		public ILegendItem Create(ILegend legend, object item)
+        public override ILegendItem Create(ILegendSettings legend, object item)
 		{
 			if (item == null)
 				throw new ArgumentNullException("item");
@@ -52,18 +52,18 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 			ILegendItem res = null;
 			if (vl.Theme != null)
 			{
-				res = legend.Factory[vl.Theme].Create(legend, vl.Theme) ?? new LegendItem();
+				res = Factory[vl.Theme].Create(legend, vl.Theme) ?? new LegendItem();
 				res.Label = vl.LayerName + res.Label ?? string.Empty;
 			}
 			else
 			{
-				res = legend.Factory[vl.Style].Create(legend, vl.Style) ?? new LegendItem();
+				res = Factory[vl.Style].Create(legend, vl.Style) ?? new LegendItem();
 				res.Label = vl.LayerName;
 			}
 		    res.Item = item;
-			res.LabelFont = legend.Settings.ItemFont;
-            res.LabelBrush = legend.Settings.ForeColor;
-            res.Padding = legend.Settings.Padding;
+			res.LabelFont = legend.ItemFont;
+            res.LabelBrush = legend.ForeColor;
+            res.Padding = legend.Padding;
 			res.Exclude = !vl.Enabled;
 			res.Expanded = res.SubItems.Count > 0;
 
@@ -76,12 +76,20 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
     /// </summary>
 	public class DefaultLabelLayerLegendItemFactory : ILegendItemFactory
     {
-	    public Type[] ForType 
+        private ILegendFactory _factory;
+
+        public ILegendFactory Factory
+        {
+            get { return _factory; }
+            set { _factory = value; }
+        }
+
+        public Type[] ForType 
         {
 	        get { return new [] {typeof (LabelLayer)}; }
 	    }
 
-	    public ILegendItem Create(ILegend legend, object item)
+	    public ILegendItem Create(ILegendSettings legend, object item)
 	    {
             if (item == null)
                 throw new ArgumentNullException("item");
@@ -93,18 +101,18 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             ILegendItem res = null;
             if (vl.Theme != null)
             {
-                res = legend.Factory[vl.Theme].Create(legend, vl.Theme) ?? new LegendItem();
+                res = Factory[vl.Theme].Create(legend, vl.Theme) ?? new LegendItem();
                 res.Label = vl.LayerName + res.Label ?? string.Empty;
             }
             else
             {
-                res = legend.Factory[vl.Style].Create(legend, vl.Style) ?? new LegendItem();
+                res = Factory[vl.Style].Create(legend, vl.Style) ?? new LegendItem();
                 res.Label = vl.LayerName;
             }
 
-            res.LabelFont = legend.Settings.ItemFont;
-            res.LabelBrush = legend.Settings.ForeColor;
-            res.Padding = legend.Settings.Padding;
+            res.LabelFont = legend.ItemFont;
+            res.LabelBrush = legend.ForeColor;
+            res.Padding = legend.Padding;
             res.Exclude = !vl.Enabled;
             res.Expanded = res.SubItems.Count > 0;
 	        res.Item = item;
@@ -115,6 +123,14 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 
     public class DefaultSymbolizerLayerLegendItemFactory : ILegendItemFactory
     {
+        private ILegendFactory _factory;
+
+        public ILegendFactory Factory
+        {
+            get { return _factory; }
+            set { _factory = value; }
+        }
+
         public Type[] ForType
         {
             get
@@ -128,7 +144,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             }
         }
 
-        public ILegendItem Create(ILegend legend, object item)
+        public ILegendItem Create(ILegendSettings legend, object item)
         {
             if (item == null)
                 throw new ArgumentNullException("item");
@@ -140,7 +156,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             var sym = GetSymbolizer(item);
 
             ILegendItem res = null;
-            var symFac = legend.Factory[sym];
+            var symFac = Factory[sym];
             if (symFac != null)
                 res = symFac.Create(legend, sym) ?? new LegendItem();
             else
@@ -149,9 +165,9 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             res.Item = item;
             res.Label = ((ILayer) item).LayerName;
 
-            res.LabelFont = legend.Settings.ItemFont;
-            res.LabelBrush = legend.Settings.ForeColor;
-            res.Padding = legend.Settings.Padding;
+            res.LabelFont = legend.ItemFont;
+            res.LabelBrush = legend.ForeColor;
+            res.Padding = legend.Padding;
             res.Exclude = !((ILayer)item).Enabled;
             res.Expanded = res.SubItems.Count > 0;
 

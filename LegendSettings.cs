@@ -25,8 +25,8 @@ namespace SharpMap.Rendering.Decoration.Legend
         /// Creates an instance of this class with default values
         /// </summary>
         public LegendSettings()
-            :this(new Font("Arial", 16f, FontStyle.Bold, GraphicsUnit.Pixel),
-                  new Font("Arial", 12f, FontStyle.Regular, GraphicsUnit.Pixel),
+            :this(new Font("Arial", 16f, FontStyle.Bold),
+                  new Font("Arial", 12f, FontStyle.Regular),
                   new Size(16, 16), new Size(3, 3))
         {}
         /// <summary>

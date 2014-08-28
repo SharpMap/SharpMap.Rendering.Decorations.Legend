@@ -25,6 +25,11 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
     public interface ILegendItemFactory
     {
         /// <summary>
+        /// Gets a value indicating the legend factory this legend item factory belongs to.
+        /// </summary>
+        ILegendFactory Factory { get; set; }
+
+        /// <summary>
         /// The type this factory is intended for
         /// </summary>
         Type[] ForType { get; }
@@ -32,9 +37,9 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         /// <summary>
         /// Method to create the legend item
         /// </summary>
-        /// <param name="legend">The legend a legend item should be created for</param>
+        /// <param name="settings">The legend settings</param>
         /// <param name="item">The item to create a legend item for</param>
         /// <returns>The legend item, if one could be created, otherwise <c>null</c></returns>
-        ILegendItem Create(ILegend legend, object item);
+        ILegendItem Create(ILegendSettings settings, object item);
     }
 }

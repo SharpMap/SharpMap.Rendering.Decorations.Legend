@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Security.Cryptography;
 using SharpMap.Layers;
 using SharpMap.Rendering.Decoration.Legend.Properties;
 
@@ -13,31 +14,41 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
             get { return new[] { typeof(LayerCollection) }; }
         }
 
-        public override ILegendItem Create(ILegend legend, object item)
+        public override ILegendItem Create(ILegendSettings legend, object item)
         {
+            var lc = (LayerCollection)item;
+            if (lc.Count == 0) 
+                return null;
+
             var res = base.Create(legend, item);
 
-            if (item == legend.Map.VariableLayers)
+            var lrs = new ILayer[lc.Count];
+            lc.CopyTo(lrs, 0);
+            Array.Reverse(lrs);
+            foreach (var layer in lrs)
             {
-                res.Label = Resources.lcVariable;
+                var li = Factory[layer].Create(legend, layer);
+                if (li != null)
+                {
+                    res.SubItems.Add(li);
+                }
             }
-            else if (item == legend.Map.Layers)
-            {
-                res.Label = Resources.lcStatic;
-            }
-            else if (item == legend.Map.BackgroundLayer)
-            {
-                res.Label = Resources.lcBackground;
-            }
-            else
-            {
-                throw new ArgumentException("The layer collection does not belong to the map for this legend");
-            }
+            res.Expanded = res.SubItems.Count > 0;
+            res.Indentation = legend.Indentation;
             return res;
         }
 
         protected override string CreateLabel(object item)
         {
+            var lc = (LayerCollection)item;
+            if (item is VariableLayerCollection)
+                return Resources.lcVariable;
+            if (lc.Count > 0)
+            {
+                if (lc[0] is TileAsyncLayer)
+                    return Resources.lcBackground;
+                return Resources.lcStatic;
+            }
             return string.Empty;
         }
 

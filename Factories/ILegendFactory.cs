@@ -15,6 +15,7 @@
 // along with SharpMap; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 
+using System;
 using System.Drawing;
 
 namespace SharpMap.Rendering.Decoration.Legend.Factories
@@ -28,8 +29,9 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         /// Method to create a legend <see cref="IMapDecoration"/> for the provided map
         /// </summary>
         /// <param name="map">The map</param>
+        /// <param name="settings"></param>
         /// <returns>A legend map decoration</returns>
-        ILegend Create(Map map);
+        ILegend Create(Map map, ILegendSettings settings);
 
         /// <summary>
         /// Method to register a legend item factory
@@ -47,6 +49,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
         /// <summary>
         /// Get or sets the default legend settings
         /// </summary>
+        [Obsolete]
         ILegendSettings LegendSettings { get; set; }
     }
 }
