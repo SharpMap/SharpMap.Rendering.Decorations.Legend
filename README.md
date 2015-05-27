@@ -17,7 +17,7 @@ var factory = new SharpMap.Rendering.Decoration.Legend.Factories.LegendFactory
     
 var legend = factory.Create(map);
 // Get a legend image
-var legendImage = map.GetLegendImage();
+var legendImage = legend.GetLegendImage();
 
 // Display the legend image on the map
 map.Decorations.Add(legend);
