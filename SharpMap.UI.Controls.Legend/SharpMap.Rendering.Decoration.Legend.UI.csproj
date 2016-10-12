@@ -95,7 +95,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LegendControl" />
+    <Compile Include="LegendControl">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="LegendControl.Designer.cs">
       <DependentUpon>LegendControl</DependentUpon>
     </Compile>
@@ -104,7 +106,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharpMap.Rendering.Decoration.Legend.csproj">
+    <ProjectReference Include="..\SharpMap.Rendering.Decoration.Legend\SharpMap.Rendering.Decoration.Legend.csproj">
       <Project>{B097D44F-930D-4892-9C78-64C376968B69}</Project>
       <Name>SharpMap.Rendering.Decoration.Legend</Name>
     </ProjectReference>

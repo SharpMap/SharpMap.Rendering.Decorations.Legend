@@ -125,7 +125,7 @@
     <None Include="Resources\lcSymbol.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="CategoryTheme\SharpMap.Rendering.Thematics.CategoryTheme.csproj">
+    <ProjectReference Include="..\CategoryTheme\SharpMap.Rendering.Thematics.CategoryTheme.csproj">
       <Project>{565E0DA8-F456-486E-96B6-19C1C273295D}</Project>
       <Name>SharpMap.Rendering.Thematics.CategoryTheme</Name>
     </ProjectReference>
