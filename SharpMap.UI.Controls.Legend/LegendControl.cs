@@ -51,14 +51,14 @@ namespace SharpMap.Rendering.Decoration.Legend.UI
 
         public LegendControl()
         {
-//
-// The InitializeComponent() call is required for Windows Forms designer support.
-//
+            //
+            // The InitializeComponent() call is required for Windows Forms designer support.
+            //
             InitializeComponent();
 
-//
-// TODO: Add constructor code after the InitializeComponent() call.
-//
+            //
+            // TODO: Add constructor code after the InitializeComponent() call.
+            //
         }
 
         public ILegendFactory Factory { get; set; }

@@ -38,11 +38,6 @@ namespace SharpMap.Rendering.Decoration.Legend.UI
         /// </summary>
         private void InitializeComponent()
         {
-            // 
-            // UserControl1
-            // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Name = "UserControl1";
         }
     }
 }
