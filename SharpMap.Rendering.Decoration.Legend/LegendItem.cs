@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Linq;
 
 namespace SharpMap.Rendering.Decoration.Legend
 {
@@ -39,7 +40,7 @@ namespace SharpMap.Rendering.Decoration.Legend
         {
         	if (Exclude) return Size.Empty;
 
-            var size = ComputeItemSize(g, map);
+            var size = ComputeItemSize(g);
             foreach (var subItem in SubItems)
             {
                 var subItemSize = subItem.InternalSize(g, map);
@@ -76,7 +77,7 @@ namespace SharpMap.Rendering.Decoration.Legend
         /// <param name="g"></param>
         /// <param name="map"></param>
         /// <returns></returns>
-        protected Size ComputeItemSize(Graphics g, Map map)
+        public Size ComputeItemSize(Graphics g)
         {
             var width = 0;
             var height = 0;
@@ -156,7 +157,7 @@ namespace SharpMap.Rendering.Decoration.Legend
             // nothing to do if excluded
             if (Exclude) return;
 
-            var itemSize = ComputeItemSize(g, map);
+            var itemSize = ComputeItemSize(g);
             var offset = Point.Empty;
             if (Symbol != null)
             {
@@ -212,6 +213,7 @@ namespace SharpMap.Rendering.Decoration.Legend
             public Font LabelFont { get { return null; } set { } }
             public Brush LabelBrush { get { return null; } set{} }
             public Size InternalSize(Graphics g, Map map) { return Size.Empty; }
+            public Size ComputeItemSize(Graphics g) { return Size.Empty; }
             public Size Padding { get { return Size.Empty; } set {}}
             public int Indentation { get { return 0; } set {}}
             public bool Expanded { get { return false; } set { } }

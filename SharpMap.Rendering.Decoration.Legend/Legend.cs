@@ -89,7 +89,7 @@ namespace SharpMap.Rendering.Decoration.Legend
             base.OnRender(g, map);
             g.TranslateTransform(BorderMargin.Width, BorderMargin.Height);
             Root.Render(g, map);
-            g.TranslateTransform(-BorderMargin.Width, - BorderMargin.Height);
+            g.TranslateTransform(-BorderMargin.Width, -BorderMargin.Height);
         }
 
 		protected override void OnRendered(Graphics g, Map map)

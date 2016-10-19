@@ -30,6 +30,7 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
                 var li = Factory[layer].Create(legend, layer);
                 if (li != null)
                 {
+                    li.Parent = res;
                     res.SubItems.Add(li);
                 }
             }

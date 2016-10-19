@@ -60,6 +60,13 @@ namespace SharpMap.Rendering.Decoration.Legend
         Size InternalSize(Graphics g, Map map);
 
         /// <summary>
+        /// Method to compute the size of the this legend item
+        /// </summary>
+        /// <param name="g">The graphics object to render the legend item</param>
+        /// <returns></returns>
+        Size ComputeItemSize(Graphics g);
+
+        /// <summary>
         /// Gets or sets the padding size
         /// </summary>
         Size Padding { get; set; }

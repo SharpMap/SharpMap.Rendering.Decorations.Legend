@@ -86,13 +86,25 @@ namespace SharpMap.Rendering.Decoration.Legend.Factories
 
             var lif = ((ILegendFactory) this)[ map.Layers];
             if (map.VariableLayers.Count > 0)
-                res.Root.SubItems.Add(lif.Create(LegendSettings, map.VariableLayers));
+            {
+                var itm = lif.Create(LegendSettings, map.VariableLayers);
+                itm.Parent = res.Root;
+                res.Root.SubItems.Add(itm);
+            }
 
             if (map.Layers.Count > 0)
-                res.Root.SubItems.Add(lif.Create(LegendSettings, map.Layers));
+            {
+                var itm = lif.Create(LegendSettings, map.Layers);
+                itm.Parent = res.Root;
+                res.Root.SubItems.Add(itm);
+            }
 
             if (map.BackgroundLayer.Count > 0)
-                res.Root.SubItems.Add(lif.Create(LegendSettings, map.BackgroundLayer));
+            {
+                var itm = lif.Create(LegendSettings, map.BackgroundLayer);
+                itm.Parent = res.Root;
+                res.Root.SubItems.Add(itm);
+            }
 
             res.BorderColor = Color.Tomato;
             res.BorderMargin = new Size(5, 5);

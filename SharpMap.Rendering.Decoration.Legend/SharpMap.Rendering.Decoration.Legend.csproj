@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SharpMap.Rendering.Decoration.Legend</RootNamespace>
     <AssemblyName>SharpMap.Rendering.Decoration.Legend</AssemblyName>
-    <TargetFrameworkVersion>v4.0.3</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -51,28 +51,28 @@
       <HintPath>$(SolutionDir)packages\Common.Logging.2.0.0\lib\2.0\Common.Logging.dll</HintPath>
     </Reference>
     <Reference Include="GeoAPI">
-      <HintPath>$(SolutionDir)packages\GeoAPI.1.7.2\lib\net403-client\GeoAPI.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\GeoAPI.1.7.2\lib\net40-client\GeoAPI.dll</HintPath>
     </Reference>
     <Reference Include="NetTopologySuite">
-      <HintPath>$(SolutionDir)packages\NetTopologySuite.1.13.2\lib\net403-client\NetTopologySuite.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\NetTopologySuite.1.13.2\lib\net40-client\NetTopologySuite.dll</HintPath>
     </Reference>
     <Reference Include="NetTopologySuite.IO.GeoTools">
-      <HintPath>$(SolutionDir)packages\NetTopologySuite.IO.1.13.2\lib\net403-client\NetTopologySuite.IO.GeoTools.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\NetTopologySuite.IO.1.13.2\lib\net40-client\NetTopologySuite.IO.GeoTools.dll</HintPath>
     </Reference>
     <Reference Include="NetTopologySuite.IO.MsSqlSpatial">
-      <HintPath>$(SolutionDir)packages\NetTopologySuite.IO.1.13.2\lib\net403-client\NetTopologySuite.IO.MsSqlSpatial.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\NetTopologySuite.IO.1.13.2\lib\net40-client\NetTopologySuite.IO.MsSqlSpatial.dll</HintPath>
     </Reference>
     <Reference Include="NetTopologySuite.IO.PostGis">
-      <HintPath>$(SolutionDir)packages\NetTopologySuite.IO.1.13.2\lib\net403-client\NetTopologySuite.IO.PostGis.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\NetTopologySuite.IO.1.13.2\lib\net40-client\NetTopologySuite.IO.PostGis.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(SolutionDir)packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PowerCollections">
-      <HintPath>$(SolutionDir)packages\NetTopologySuite.1.13.2\lib\net403-client\PowerCollections.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\NetTopologySuite.1.13.2\lib\net40-client\PowerCollections.dll</HintPath>
     </Reference>
     <Reference Include="ProjNet">
-      <HintPath>$(SolutionDir)packages\ProjNET4GeoAPI.1.3.0.3\lib\net403-client\ProjNet.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\ProjNET4GeoAPI.1.3.0.3\lib\net40-client\ProjNet.dll</HintPath>
     </Reference>
     <Reference Include="SharpMap">
       <HintPath>$(SolutionDir)packages\SharpMap.1.1.0\lib\net40-client\SharpMap.dll</HintPath>
