@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using BruTile.Web;
@@ -12,6 +13,8 @@ using SharpMap.Layers;
 using SharpMap.Layers.Symbolizer;
 using SharpMap.Rendering.Decoration.Legend.Factories;
 using System.Drawing;
+using System.Windows.Forms;
+using SharpMap.Rendering.Decoration.Legend.UI;
 using SharpMap.Rendering.Symbolizer;
 using SharpMap.Utilities.Wfs;
 
@@ -32,115 +35,136 @@ namespace SharpMap.Rendering.Decoration.Legend
 			
 		}
 
-		[Test]
-		public void TestStandardLayers()
-		{
-			using (var map = new Map())
-			{
-				map.Layers.Add(
-					new TileLayer(new OsmTileSource(new OsmRequest(KnownOsmTileServers.Mapnik)),
-						"OSM - Mapnik"));
+	    private Map CreateMap()
+	    {
+	        var map = new Map();
+
+	        map.Layers.Add(
+	            new TileLayer(new OsmTileSource(new OsmRequest(KnownOsmTileServers.Mapnik)),
+	                "OSM - Mapnik"));
 
 
-                //var wfs = new SharpMap.Web.Wfs.Client(@"http://www2.dmsolutions.ca/cgi-bin/mswfs_gmap?version=1.0.0&request=getcapabilities&service=wfs");
-                //var p = new SharpMap.Data.Providers.WFS(
-                //    new WfsFeatureTypeInfo { SRID = "EPSG:42304", Geometry = new WfsFeatureTypeInfo.GeometryInfo{}});
-                
-                map.Layers.Add(
-					new VectorLayer("Lineal VectorLayer",
-					                new SharpMap.Data.Providers.GeometryFeatureProvider(
-					                	NtsGeometryServices.Instance.CreateGeometryFactory(4326).CreateLineString(
-					                		new [] { new GeoAPI.Geometries.Coordinate(0, 0), new GeoAPI.Geometries.Coordinate(10, 0)}))));
-				var l = map.Layers[1] as VectorLayer;
-				l.Style = SharpMap.Styles.VectorStyle.CreateRandomLinealStyle();
-				
-				map.Layers.Add(
-					new VectorLayer("Puntal VectorLayer",
-					                new SharpMap.Data.Providers.GeometryFeatureProvider(
-					                	NtsGeometryServices.Instance.CreateGeometryFactory(4326).CreatePoint(
-					                		new GeoAPI.Geometries.Coordinate(5, 5)))));
-				l = map.Layers[2] as VectorLayer;
-				l.Style = SharpMap.Styles.VectorStyle.CreateRandomPuntalStyle();
-				map.Layers.Add(
-					new VectorLayer("Polygonal VectorLayer",
-					                new SharpMap.Data.Providers.GeometryFeatureProvider(
-					                	NtsGeometryServices.Instance.CreateGeometryFactory(4326).CreatePolygon(null, null))));
-				l = map.Layers[3] as VectorLayer;
-				l.Style = SharpMap.Styles.VectorStyle.CreateRandomPolygonalStyle();
+	        //var wfs = new SharpMap.Web.Wfs.Client(@"http://www2.dmsolutions.ca/cgi-bin/mswfs_gmap?version=1.0.0&request=getcapabilities&service=wfs");
+	        //var p = new SharpMap.Data.Providers.WFS(
+	        //    new WfsFeatureTypeInfo { SRID = "EPSG:42304", Geometry = new WfsFeatureTypeInfo.GeometryInfo{}});
 
-				map.Layers.Add(
-					new VectorLayer("Geometry VectorLayer",
-					                new SharpMap.Data.Providers.GeometryFeatureProvider(
-					                	NtsGeometryServices.Instance.CreateGeometryFactory(4326).CreatePoint(
-					                		new GeoAPI.Geometries.Coordinate(5, 5)))));
-				l = map.Layers[4] as VectorLayer;
-				l.Style = SharpMap.Styles.VectorStyle.CreateRandomStyle();
+	        map.Layers.Add(
+	            new VectorLayer("Lineal VectorLayer",
+	                new SharpMap.Data.Providers.GeometryFeatureProvider(
+	                    NtsGeometryServices.Instance.CreateGeometryFactory(4326).CreateLineString(
+	                        new[] {new GeoAPI.Geometries.Coordinate(0, 0), new GeoAPI.Geometries.Coordinate(10, 0)}))));
+	        var l = map.Layers[1] as VectorLayer;
+	        l.Style = SharpMap.Styles.VectorStyle.CreateRandomLinealStyle();
 
-				map.Layers.Add(
-					new VectorLayer("Geometry VectorLayer with theme",
-					                new SharpMap.Data.Providers.GeometryFeatureProvider(
-					                	NtsGeometryServices.Instance.CreateGeometryFactory(4326).CreatePoint(
-					                		new GeoAPI.Geometries.Coordinate(5, 5)))));
-				l = map.Layers[5] as VectorLayer;
+	        map.Layers.Add(
+	            new VectorLayer("Puntal VectorLayer",
+	                new SharpMap.Data.Providers.GeometryFeatureProvider(
+	                    NtsGeometryServices.Instance.CreateGeometryFactory(4326).CreatePoint(
+	                        new GeoAPI.Geometries.Coordinate(5, 5)))));
+	        l = map.Layers[2] as VectorLayer;
+	        l.Style = SharpMap.Styles.VectorStyle.CreateRandomPuntalStyle();
+	        map.Layers.Add(
+	            new VectorLayer("Polygonal VectorLayer",
+	                new SharpMap.Data.Providers.GeometryFeatureProvider(
+	                    NtsGeometryServices.Instance.CreateGeometryFactory(4326).CreatePolygon(null, null))));
+	        l = map.Layers[3] as VectorLayer;
+	        l.Style = SharpMap.Styles.VectorStyle.CreateRandomPolygonalStyle();
 
-				var dict = new Dictionary<int, SharpMap.Styles.IStyle>();
-				dict.Add(1, SharpMap.Styles.VectorStyle.CreateRandomLinealStyle());
-				dict.Add(2, SharpMap.Styles.VectorStyle.CreateRandomLinealStyle());
-				dict.Add(3, SharpMap.Styles.VectorStyle.CreateRandomLinealStyle());
-				dict.Add(4, SharpMap.Styles.VectorStyle.CreateRandomLinealStyle());
-				l.Theme = new SharpMap.Rendering.Thematics.UniqueValuesTheme<int>("test", dict,
-				                                                                  SharpMap.Styles.VectorStyle.CreateRandomLinealStyle());
+	        map.Layers.Add(
+	            new VectorLayer("Geometry VectorLayer",
+	                new SharpMap.Data.Providers.GeometryFeatureProvider(
+	                    NtsGeometryServices.Instance.CreateGeometryFactory(4326).CreatePoint(
+	                        new GeoAPI.Geometries.Coordinate(5, 5)))));
+	        l = map.Layers[4] as VectorLayer;
+	        l.Style = SharpMap.Styles.VectorStyle.CreateRandomStyle();
 
-				map.Layers.Add(
-					new VectorLayer("Geometry VectorLayer with gradient theme",
-					                new SharpMap.Data.Providers.GeometryFeatureProvider(
-					                	NtsGeometryServices.Instance.CreateGeometryFactory(4326).CreatePoint(
-					                		new GeoAPI.Geometries.Coordinate(5, 5)))));
-				l = map.Layers[6] as VectorLayer;
-				l.Theme = new SharpMap.Rendering.Thematics.GradientTheme("test", -100, 100,
-				                                                         SharpMap.Styles.VectorStyle.CreateRandomPolygonalStyle(),
-				                                                         SharpMap.Styles.VectorStyle.CreateRandomPolygonalStyle());
-				((SharpMap.Rendering.Thematics.GradientTheme)l.Theme).FillColorBlend = SharpMap.Rendering.Thematics.ColorBlend.RainbowMOHID;
+	        map.Layers.Add(
+	            new VectorLayer("Geometry VectorLayer with theme",
+	                new SharpMap.Data.Providers.GeometryFeatureProvider(
+	                    NtsGeometryServices.Instance.CreateGeometryFactory(4326).CreatePoint(
+	                        new GeoAPI.Geometries.Coordinate(5, 5)))));
+	        l = map.Layers[5] as VectorLayer;
 
-				var ct = new SharpMap.Rendering.Thematics.CategoryTheme<int>();
-				ct.ColumnName = "test";
-				ct.Default = new SharpMap.Rendering.Thematics.CategoryThemeValuesItem<int> { Title = "standard", Style =
-						SharpMap.Styles.VectorStyle.CreateRandomPolygonalStyle()};
-				ct.Add(new SharpMap.Rendering.Thematics.CategoryThemeValuesItem<int> { Title = "Line", Style =
-				       		SharpMap.Styles.VectorStyle.CreateRandomLinealStyle()});
-				ct.Add(new SharpMap.Rendering.Thematics.CategoryThemeValuesItem<int> { Title = "Point", Style =
-				       		SharpMap.Styles.VectorStyle.CreateRandomPuntalStyle()});
-				
-				map.Layers.Add(
-					new VectorLayer("Geometry VectorLayer with category theme",
-					                new SharpMap.Data.Providers.GeometryFeatureProvider(
-					                	NtsGeometryServices.Instance.CreateGeometryFactory(4326).CreatePoint(
-					                		new GeoAPI.Geometries.Coordinate(5, 5)))));
-				l = map.Layers[7] as VectorLayer;
-				l.Theme = ct;
-				
-				try
-				{
+	        var dict = new Dictionary<int, SharpMap.Styles.IStyle>();
+	        dict.Add(1, SharpMap.Styles.VectorStyle.CreateRandomLinealStyle());
+	        dict.Add(2, SharpMap.Styles.VectorStyle.CreateRandomLinealStyle());
+	        dict.Add(3, SharpMap.Styles.VectorStyle.CreateRandomLinealStyle());
+	        dict.Add(4, SharpMap.Styles.VectorStyle.CreateRandomLinealStyle());
+	        l.Theme = new SharpMap.Rendering.Thematics.UniqueValuesTheme<int>("test", dict,
+	            SharpMap.Styles.VectorStyle.CreateRandomLinealStyle());
 
-					map.ZoomToExtents();
-					var factory = new LegendFactory();
-					((LegendSettings)factory.LegendSettings).SymbolSize = new Size(16, 16);
-                    ((LegendSettings)factory.LegendSettings).HeaderFont = new Font("Times New Roman", 8, FontStyle.Italic);
-					var legend = factory.Create(map, null);
-					((MapDecoration)legend).BackgroundColor = System.Drawing.Color.White;
-					legend.Root.Label = "This is a super long legend title";
-					using (var img = legend.GetLegendImage())
-					{
-						img.Save("legendimage.png");
-						System.Diagnostics.Process.Start("legendimage.png");
-					}}
-				catch(Exception e)
-				{
-					throw e;
-				}
-			}
+	        map.Layers.Add(
+	            new VectorLayer("Geometry VectorLayer with gradient theme",
+	                new SharpMap.Data.Providers.GeometryFeatureProvider(
+	                    NtsGeometryServices.Instance.CreateGeometryFactory(4326).CreatePoint(
+	                        new GeoAPI.Geometries.Coordinate(5, 5)))));
+	        l = map.Layers[6] as VectorLayer;
+	        l.Theme = new SharpMap.Rendering.Thematics.GradientTheme("test", -100, 100,
+	            SharpMap.Styles.VectorStyle.CreateRandomPolygonalStyle(),
+	            SharpMap.Styles.VectorStyle.CreateRandomPolygonalStyle());
+	        ((SharpMap.Rendering.Thematics.GradientTheme) l.Theme).FillColorBlend =
+	            SharpMap.Rendering.Thematics.ColorBlend.RainbowMOHID;
 
-		}
+	        var ct = new SharpMap.Rendering.Thematics.CategoryTheme<int>();
+	        ct.ColumnName = "test";
+	        ct.Default = new SharpMap.Rendering.Thematics.CategoryThemeValuesItem<int>
+	        {
+	            Title = "standard",
+	            Style =
+	                SharpMap.Styles.VectorStyle.CreateRandomPolygonalStyle()
+	        };
+	        ct.Add(new SharpMap.Rendering.Thematics.CategoryThemeValuesItem<int>
+	        {
+	            Title = "Line",
+	            Style =
+	                SharpMap.Styles.VectorStyle.CreateRandomLinealStyle()
+	        });
+	        ct.Add(new SharpMap.Rendering.Thematics.CategoryThemeValuesItem<int>
+	        {
+	            Title = "Point",
+	            Style =
+	                SharpMap.Styles.VectorStyle.CreateRandomPuntalStyle()
+	        });
+
+	        map.Layers.Add(
+	            new VectorLayer("Geometry VectorLayer with category theme",
+	                new SharpMap.Data.Providers.GeometryFeatureProvider(
+	                    NtsGeometryServices.Instance.CreateGeometryFactory(4326).CreatePoint(
+	                        new GeoAPI.Geometries.Coordinate(5, 5)))));
+	        l = map.Layers[7] as VectorLayer;
+	        l.Theme = ct;
+
+	        return map;
+	    }
+
+
+	    [Test]
+	    public void TestStandardLayers()
+	    {
+	        using (var map = CreateMap())
+	            try
+	            {
+
+	                map.ZoomToExtents();
+	                var factory = new LegendFactory();
+	                ((LegendSettings) factory.LegendSettings).SymbolSize = new Size(16, 16);
+	                ((LegendSettings) factory.LegendSettings).HeaderFont = new Font("Times New Roman", 8, FontStyle.Italic);
+	                var legend = factory.Create(map, null);
+	                ((MapDecoration) legend).BackgroundColor = System.Drawing.Color.White;
+	                legend.Root.Label = "This is a super long legend title";
+	                using (var img = legend.GetLegendImage())
+	                {
+	                    img.Save("legendimage.png");
+	                    System.Diagnostics.Process.Start("legendimage.png");
+	                }
+	            }
+	            catch (Exception e)
+	            {
+	                throw e;
+	            }
+	    }
+
+
 
 	    [Test]
 	    public void TestSymbolizerLayers()
@@ -186,5 +210,46 @@ namespace SharpMap.Rendering.Decoration.Legend
                 }
             }
         }
+
+        [Test]
+	    public void TestControl()
+	    {
+	        using (var frm = new System.Windows.Forms.Form())
+	        {
+                frm.SuspendLayout();
+                var splitter = new System.Windows.Forms.SplitContainer();
+                splitter.Dock = DockStyle.Fill;
+
+                
+	            var sp1 = splitter.Panel1;// = new SplitterPanel(splitter);
+                var pg = new PropertyGrid();
+                sp1.Controls.Add(pg);
+                pg.Dock = DockStyle.Fill;
+	            var sp2 = splitter.Panel2;// SplitterPanel(splitter);
+                var lc1 = new LegendControl();
+                lc1.Dock = DockStyle.Fill;
+                sp2.Controls.Add(lc1);
+	            pg.SelectedObject = lc1;
+
+                lc1.LegendFactory = new LegendFactory(new LegendSettings());
+                lc1.Map = CreateMap();
+
+                frm.Controls.Add(splitter);
+
+                frm.ResumeLayout();
+	            frm.ShowDialog();
+	        }
+	    }
+
+        [Test]
+	    public void TestLegendItemIterator()
+	    {
+	        var m = CreateMap();
+            var f = new LegendFactory(new LegendSettings());
+	        var li = new LegendItemEnumerator(f.Create(m).Root);
+
+            while(li.MoveNext())
+                Debug.WriteLine(li.Current.Label);
+	    }
 	}
 }
